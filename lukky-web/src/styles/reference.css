@@ -1,0 +1,99 @@
+/* Match Lukky Enterprises System v3.dc.html layout utilities */
+
+.l-grid2 {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.l-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(212px, 1fr));
+  gap: 18px;
+}
+
+.l-page-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(80, 60, 140, 0.09);
+  overflow: hidden;
+}
+
+.l-panel-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(80, 60, 140, 0.09);
+  overflow: hidden;
+  border: none;
+}
+
+.l-kpi-card {
+  background: #fff;
+  border: 1px solid #eeeafa;
+  border-radius: 18px;
+  padding: 20px 22px;
+  box-shadow: 0 10px 30px rgba(80, 60, 140, 0.07);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  height: 100%;
+}
+
+.l-row-hover:hover {
+  background: #f8f7fa !important;
+}
+
+.l-btn-secondary:hover {
+  background: #7e4ee6 !important;
+}
+
+.l-btn-primary:hover {
+  background: #6d34d0 !important;
+}
+
+.l-nav-item {
+  background: transparent;
+}
+
+.l-nav-item:hover:not(.l-nav-item--active) {
+  background: #f6f2ff !important;
+}
+
+.l-nav-item--active,
+.l-nav-item--active:hover {
+  background: linear-gradient(100deg, #7c3aed, #6d34d0) !important;
+  box-shadow: 0 5px 14px rgba(124, 58, 237, 0.32);
+}
+
+@media (max-width: 980px) {
+  .l-grid2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 860px) {
+  .l-top {
+    flex-wrap: wrap !important;
+    row-gap: 10px !important;
+  }
+  .l-search {
+    width: 100% !important;
+    order: 5;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cfcde0;
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}

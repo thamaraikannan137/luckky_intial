@@ -1,0 +1,39 @@
+.DS_Store
+*.pem
+
+# Secrets
+.env
+.env.*
+**/.env
+**/.env.*
+
+# Dependencies & build
+node_modules/
+**/.next/
+**/out/
+**/build/
+**/.pnp
+**/.pnp.*
+**/.yarn/*
+!**/.yarn/patches
+!**/.yarn/plugins
+!**/.yarn/releases
+!**/.yarn/versions
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Prisma generated client (run `npm run db:generate`)
+lukky-web/src/generated/
+
+# TypeScript
+*.tsbuildinfo
+
+# Vercel
+.vercel
+
+# IDE / local
+.cursor/

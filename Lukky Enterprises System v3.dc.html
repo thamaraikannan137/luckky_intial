@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: #cfcde0; border-radius: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  input, select, textarea, button { font-family: inherit; }
+  @keyframes floatGlow { 0%,100%{ transform:translate(0,0); } 50%{ transform:translate(14px,-18px); } }
+  @media (max-width: 980px) {
+    .l-grid2 { grid-template-columns: 1fr !important; }
+    .l-grid3 { grid-template-columns: 1fr 1fr !important; }
+  }
+  @media (max-width: 860px) {
+    .l-side { width: 74px !important; padding-left: 10px !important; padding-right: 10px !important; }
+    .l-side .l-label { display: none !important; }
+    .l-side nav a { justify-content: center !important; }
+    .l-top { flex-wrap: wrap !important; height: auto !important; row-gap: 10px !important; }
+    .l-search { width: 100% !important; order: 5 !important; }
+    .l-grid3 { grid-template-columns: 1fr !important; }
+  }
+  @media print {
+    body * { visibility: hidden !important; }
+    #invoice-paper, #invoice-paper * { visibility: visible !important; }
+    #invoice-paper { position: absolute !important; left: 0; top: 0; width: 100%; box-shadow: none !important; }
+  }
+</style>
+</helmet>
+
+  <div style="display:flex; height:100vh; width:100%; overflow:hidden; background:radial-gradient(900px 480px at 82% -10%, #F0ECFB 0%, rgba(240,236,251,0) 60%), #F7F7FB; color:#241F38; font-family:'Plus Jakarta Sans','Public Sans',system-ui,sans-serif; -webkit-font-smoothing:antialiased;">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="l-side" style="width:248px; flex-shrink:0; position:relative; overflow:hidden; background:#fff; border-right:1px solid #ECEAF3; display:flex; flex-direction:column; padding:20px 14px;">
+    <div style="position:absolute; top:-70px; right:-60px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle,#7C3AED12,transparent 70%); pointer-events:none;"></div>
+    <div style="display:flex; align-items:center; gap:12px; padding:6px 10px 24px; position:relative;">
+      <div style="width:38px; height:38px; border-radius:11px; background:linear-gradient(135deg,#A879FF,#7C3AED); display:flex; align-items:center; justify-content:center; box-shadow:0 6px 16px rgba(124,58,237,.35); flex-shrink:0;">
+        <span style="font-weight:800; font-size:19px; color:#fff;">L</span>
+      </div>
+      <div class="l-label" style="line-height:1.05; min-width:0;">
+        <div style="font-weight:800; font-size:18px; color:#241F38; letter-spacing:-.02em;">Lukky</div>
+        <div style="font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:#A5A0B8;">Enterprises</div>
+      </div>
+    </div>
+
+    <div class="l-label" style="font-size:10.5px; font-weight:700; color:#A5A0B8; letter-spacing:.12em; text-transform:uppercase; padding:4px 12px 10px; position:relative;">Menu</div>
+    <nav style="display:flex; flex-direction:column; gap:5px; position:relative;">
+      <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="5">
+        <a onClick="{{ n.onClick }}" style="{{ n.style }}">
+          <span style="display:flex; width:22px; height:22px; align-items:center; justify-content:center;">{{ n.icon }}</span>
+          <span class="l-label" style="flex:1;">{{ n.label }}</span>
+          <sc-if value="{{ n.badge }}" hint-placeholder-val="{{ false }}"><span class="l-label" style="{{ n.badgeStyle }}">{{ n.badgeText }}</span></sc-if>
+          <sc-if value="{{ n.locked }}" hint-placeholder-val="{{ false }}"><span class="l-label" style="font-size:12px; opacity:.5;">🔒</span></sc-if>
+        </a>
+      </sc-for>
+    </nav>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <main style="flex:1; display:flex; flex-direction:column; min-width:0; overflow:hidden;">
+
+    <!-- app bar -->
+    <header class="l-top" style="flex-shrink:0; display:flex; align-items:center; gap:18px; padding:14px 26px; background:transparent;">
+      <div style="min-width:0;">
+        <h1 style="margin:0; font-weight:800; font-size:23px; letter-spacing:-.03em; color:#241F38;">{{ pageTitle }}</h1>
+        <div style="font-size:12.5px; color:#8A82A6; margin-top:2px;">{{ pageSub }}</div>
+      </div>
+      <div style="flex:1;"></div>
+      <div class="l-search" style="display:flex; align-items:center; gap:9px; background:rgba(255,255,255,.75); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,.9); border-radius:12px; padding:10px 14px; width:262px; box-shadow:0 6px 18px rgba(80,60,140,.10);">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#A99FC9" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4-4"></path></svg>
+        <input value="{{ globalSearch }}" onInput="{{ onGlobalSearch }}" placeholder="Search customer or phone…" style="border:none; outline:none; background:transparent; font-size:14px; width:100%; color:#241F38;" />
+      </div>
+      <button onClick="{{ onNewOrder }}" style="display:flex; align-items:center; gap:7px; padding:11px 20px; border:none; border-radius:12px; background:#7C3AED; color:#fff; font-weight:700; font-size:14px; cursor:pointer; box-shadow:0 5px 14px rgba(124,58,237,.30); white-space:nowrap;" style-hover="background:#6D34D0;">
+        <span style="font-size:17px; line-height:1;">+</span> New Order
+      </button>
+      <div style="display:flex; align-items:center; gap:9px; padding-left:6px;">
+        <div style="text-align:right; line-height:1.2;">
+          <div style="font-size:13px; font-weight:700; color:#241F38;">{{ roleName }}</div>
+          <div style="font-size:11px; color:#8A82A6;">{{ roleSub }}</div>
+        </div>
+        <button onClick="{{ onToggleRole }}" title="Switch role" style="width:40px; height:40px; border-radius:50%; border:2px solid #fff; background:linear-gradient(135deg,#A879FF,#7C3AED); color:#fff; font-weight:700; font-size:14px; cursor:pointer; box-shadow:0 6px 16px rgba(124,58,237,.5);">{{ roleInitial }}</button>
+      </div>
+    </header>
+
+    <!-- content -->
+    <div style="flex:1; overflow:auto; padding:8px 26px 40px;">
+
+      <!-- ============ DASHBOARD ============ -->
+      <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(212px,1fr)); gap:18px;">
+            <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+              <div style="background:#fff; border:1px solid #EEEAFA; border-radius:18px; padding:20px 22px; box-shadow:0 10px 30px rgba(80,60,140,.07); display:flex; align-items:flex-start; justify-content:space-between; gap:10px;">
+                <div style="min-width:0;">
+                  <div style="font-size:12.5px; color:#8A82A6; font-weight:500;">{{ k.label }}</div>
+                  <div style="font-weight:800; font-size:27px; color:{{ k.valueColor }}; margin-top:8px; letter-spacing:-.02em; font-feature-settings:'tnum';">{{ k.value }}</div>
+                  <div style="font-size:12px; color:#A29BBC; margin-top:5px;">{{ k.sub }}</div>
+                </div>
+                <div style="width:44px; height:44px; border-radius:13px; background:#F1ECFF; color:#7C3AED; display:flex; align-items:center; justify-content:center; flex-shrink:0;">{{ k.icon }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div class="l-grid2" style="display:grid; grid-template-columns:1.5fr 1fr; gap:20px; margin-top:20px;">
+            <!-- pending balances table -->
+            <div style="background:#fff; border-radius:16px; box-shadow:0 10px 30px rgba(80,60,140,.09); overflow:hidden;">
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:18px 20px 14px;">
+                <h3 style="margin:0; font-weight:700; font-size:16px; letter-spacing:-.01em;">Pending balances</h3>
+                <a onClick="{{ goOrders }}" style="font-size:13px; color:#8C57FF; cursor:pointer; font-weight:600;">View all</a>
+              </div>
+              <div style="overflow-x:auto;">
+                <div style="min-width:440px;">
+                  <div style="display:flex; padding:9px 20px; background:#F6F6F8; border-top:1px solid #E6E5E8; font-size:11px; font-weight:600; color:#6D6B77; letter-spacing:.05em; text-transform:uppercase;">
+                    <div style="flex:1;">Customer</div><div style="width:120px;">Status</div><div style="width:110px; text-align:right;">Balance</div>
+                  </div>
+                  <sc-for list="{{ pendingList }}" as="o" hint-placeholder-count="5">
+                    <div onClick="{{ o.onOpen }}" style="display:flex; align-items:center; padding:11px 20px; border-top:1px solid #F0EFF2; cursor:pointer;" style-hover="background:#F8F7FA;">
+                      <div style="flex:1; display:flex; align-items:center; gap:11px; min-width:0;">
+                        <div style="width:34px; height:34px; border-radius:50%; background:{{ o.tagBg }}; color:{{ o.tagColor }}; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px; flex-shrink:0;">{{ o.initials }}</div>
+                        <div style="min-width:0;"><div style="font-weight:600; font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ o.customerName }}</div><div style="font-size:11.5px; color:#A5A3AE;">{{ o.id }}</div></div>
+                      </div>
+                      <div style="width:120px;"><span style="display:inline-block; white-space:nowrap; font-size:11.5px; font-weight:600; padding:3px 10px; border-radius:5px; background:{{ o.stageBg }}; color:{{ o.stageColor }};">{{ o.stageName }}</span></div>
+                      <div style="width:110px; text-align:right; font-weight:700; font-size:14px; color:#FF4C51; font-feature-settings:'tnum';">{{ o.balanceFmt }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+
+            <!-- deliveries -->
+            <div style="background:#fff; border-radius:16px; box-shadow:0 10px 30px rgba(80,60,140,.09); overflow:hidden;">
+              <div style="padding:18px 20px 14px;"><h3 style="margin:0; font-weight:700; font-size:16px; letter-spacing:-.01em;">Upcoming deliveries</h3></div>
+              <div style="border-top:1px solid #E6E5E8;">
+                <sc-for list="{{ deliveryList }}" as="o" hint-placeholder-count="5">
+                  <div onClick="{{ o.onOpen }}" style="display:flex; align-items:center; gap:12px; padding:11px 20px; border-top:1px solid #F0EFF2; cursor:pointer;" style-hover="background:#F8F7FA;">
+                    <div style="width:34px; height:34px; border-radius:8px; background:{{ o.dotBg }}; color:{{ o.dotColor }}; display:flex; align-items:center; justify-content:center; flex-shrink:0;">{{ o.icon }}</div>
+                    <div style="flex:1; min-width:0;"><div style="font-weight:600; font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ o.customerName }}</div><div style="font-size:11.5px; color:#A5A3AE;">{{ o.id }} · {{ o.deliveryFmt }}</div></div>
+                    <div style="font-weight:600; font-size:12.5px; color:{{ o.dueColor }}; white-space:nowrap;">{{ o.dueLabel }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ CUSTOMERS (TABLE) ============ -->
+      <sc-if value="{{ isCustomers }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff; border-radius:16px; box-shadow:0 10px 30px rgba(80,60,140,.09); overflow:hidden;">
+          <div style="display:flex; align-items:center; gap:10px; padding:18px 22px; flex-wrap:wrap;">
+            <h3 style="margin:0; font-weight:700; font-size:16px; letter-spacing:-.01em; margin-right:6px;">Customers</h3>
+            <sc-for list="{{ custFilters }}" as="f" hint-placeholder-count="3">
+              <button onClick="{{ f.onClick }}" style="{{ f.style }}">{{ f.label }}</button>
+            </sc-for>
+            <div style="flex:1;"></div>
+            <div style="font-size:13px; color:#A5A3AE;">{{ custCountLabel }}</div>
+            <button onClick="{{ onAddCustomer }}" style="display:flex; align-items:center; gap:7px; padding:9px 16px; border:none; border-radius:8px; background:#8C57FF; color:#fff; font-weight:600; font-size:13.5px; cursor:pointer; box-shadow:0 3px 10px rgba(140,87,255,.4);" style-hover="background:#7E4EE6;"><span style="font-size:16px; line-height:1;">+</span> Add customer</button>
+          </div>
+          <div style="overflow-x:auto;">
+            <div style="min-width:820px;">
+              <div style="display:flex; align-items:center; padding:11px 22px; background:#F6F6F8; border-top:1px solid #E6E5E8; border-bottom:1px solid #E6E5E8; font-size:11.5px; font-weight:600; color:#6D6B77; letter-spacing:.05em; text-transform:uppercase;">
+                <div style="flex:1.6; min-width:160px;">Customer</div>
+                <div style="width:120px;">Type</div>
+                <div style="width:150px;">Phone</div>
+                <div style="width:80px; text-align:center;">Orders</div>
+                <div style="width:120px; text-align:right;">Pending</div>
+                <div style="width:84px; text-align:center;">Actions</div>
+              </div>
+              <sc-for list="{{ customerList }}" as="c" hint-placeholder-count="8">
+                <div onClick="{{ c.onOpen }}" style="display:flex; align-items:center; padding:13px 22px; border-bottom:1px solid #F0EFF2; cursor:pointer;" style-hover="background:#F8F7FA;">
+                  <div style="flex:1.6; min-width:160px; display:flex; align-items:center; gap:12px;">
+                    <div style="width:38px; height:38px; border-radius:50%; background:{{ c.tagBg }}; color:{{ c.tagColor }}; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:13px; flex-shrink:0;">{{ c.initials }}</div>
+                    <div style="min-width:0;"><div style="font-weight:600; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ c.name }}</div><div style="font-size:12px; color:#A5A3AE;">{{ c.subline }}</div></div>
+                  </div>
+                  <div style="width:120px;"><span style="display:inline-block; white-space:nowrap; font-size:11.5px; font-weight:600; padding:3px 10px; border-radius:5px; background:{{ c.tagBg }}; color:{{ c.tagColor }};">{{ c.typeLabel }}</span></div>
+                  <div style="width:150px; font-size:13.5px; color:#6D6B77; font-feature-settings:'tnum';">{{ c.phone }}</div>
+                  <div style="width:80px; text-align:center; font-weight:600; font-size:14px; font-feature-settings:'tnum';">{{ c.orderCount }}</div>
+                  <div style="width:120px; text-align:right; font-weight:700; font-size:14px; color:{{ c.pendingColor }}; font-feature-settings:'tnum';">{{ c.pendingFmt }}</div>
+                  <div style="width:84px; display:flex; align-items:center; justify-content:center; gap:6px;">
+                    <button onClick="{{ c.onEdit }}" title="Edit" style="width:30px; height:30px; border:1px solid #EAE9ED; background:#fff; border-radius:7px; cursor:pointer; display:flex; align-items:center; justify-content:center;" style-hover="background:#F2EBFF; border-color:#8C57FF;">{{ iconEdit }}</button>
+                    <button onClick="{{ c.onDelete }}" title="Delete" style="width:30px; height:30px; border:1px solid #EAE9ED; background:#fff; border-radius:7px; cursor:pointer; display:flex; align-items:center; justify-content:center;" style-hover="background:#FFE7E7; border-color:#FF4C51;">{{ iconTrash }}</button>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ CUSTOMER DETAIL ============ -->
+      <sc-if value="{{ isCustomerDetail }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:1000px;">
+          <a onClick="{{ goCustomers }}" style="display:inline-flex; align-items:center; gap:6px; font-size:13px; color:#A5A3AE; cursor:pointer; margin-bottom:14px;" style-hover="color:#8C57FF;">← All customers</a>
+          <div style="background:#fff; border-radius:6px; padding:24px; box-shadow:0 2px 8px rgba(47,43,61,.10); display:flex; gap:20px; align-items:flex-start;">
+            <div style="width:62px; height:62px; border-radius:50%; background:{{ cd.tagBg }}; color:{{ cd.tagColor }}; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:21px; flex-shrink:0;">{{ cd.initials }}</div>
+            <div style="flex:1;">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <h2 style="margin:0; font-weight:700; font-size:22px;">{{ cd.name }}</h2>
+                <span style="font-size:11.5px; font-weight:600; padding:3px 10px; border-radius:5px; background:{{ cd.tagBg }}; color:{{ cd.tagColor }};">{{ cd.typeLabel }}</span>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:14px 24px; margin-top:16px;">
+                <div><div style="font-size:11.5px; color:#A5A3AE;">Phone</div><div style="font-weight:600; font-size:14px;">{{ cd.phone }}</div></div>
+                <sc-if value="{{ cd.hasContact }}" hint-placeholder-val="{{ false }}"><div><div style="font-size:11.5px; color:#A5A3AE;">Contact person</div><div style="font-weight:600; font-size:14px;">{{ cd.contact }}</div></div></sc-if>
+                <div><div style="font-size:11.5px; color:#A5A3AE;">Address</div><div style="font-weight:600; font-size:14px;">{{ cd.address }}</div></div>
+                <sc-if value="{{ cd.hasGst }}" hint-placeholder-val="{{ false }}"><div><div style="font-size:11.5px; color:#A5A3AE;">GSTIN</div><div style="font-weight:600; font-size:14px; font-feature-settings:'tnum';">{{ cd.gst }}</div></div></sc-if>
+                <sc-if value="{{ cd.hasNotes }}" hint-placeholder-val="{{ false }}"><div><div style="font-size:11.5px; color:#A5A3AE;">Notes</div><div style="font-weight:600; font-size:14px;">{{ cd.notes }}</div></div></sc-if>
+              </div>
+            </div>
+            <div style="text-align:right; flex-shrink:0;">
+              <div style="font-size:11.5px; color:#A5A3AE;">Total pending</div>
+              <div style="font-weight:700; font-size:24px; color:{{ cd.pendingColor }}; font-feature-settings:'tnum';">{{ cd.pendingFmt }}</div>
+              <button onClick="{{ cd.onNewOrder }}" style="margin-top:12px; padding:9px 16px; border:none; border-radius:8px; background:#8C57FF; color:#fff; font-weight:600; font-size:13px; cursor:pointer;" style-hover="background:#7E4EE6;">+ New order</button>
+              <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:10px;">
+                <button onClick="{{ cd.onEdit }}" style="display:flex; align-items:center; gap:6px; padding:8px 13px; border:1px solid #D9D8DE; border-radius:8px; background:#fff; color:#6D6B77; font-weight:600; font-size:12.5px; cursor:pointer;" style-hover="background:#F2EBFF; border-color:#8C57FF; color:#8C57FF;">{{ iconEdit }} Edit</button>
+                <button onClick="{{ cd.onDelete }}" style="display:flex; align-items:center; gap:6px; padding:8px 13px; border:1px solid #D9D8DE; border-radius:8px; background:#fff; color:#FF4C51; font-weight:600; font-size:12.5px; cursor:pointer;" style-hover="background:#FFE7E7; border-color:#FF4C51;">{{ iconTrash }} Delete</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#fff; border-radius:16px; box-shadow:0 10px 30px rgba(80,60,140,.09); overflow:hidden; margin-top:20px;">
+            <div style="padding:18px 22px 0;"><h3 style="margin:0 0 14px; font-weight:700; font-size:16px; letter-spacing:-.01em;">Order history</h3></div>
+            <div style="overflow-x:auto;"><div style="min-width:600px;">
+              <div style="display:flex; align-items:center; padding:11px 22px; background:#F6F6F8; border-top:1px solid #E6E5E8; font-size:11.5px; font-weight:600; color:#6D6B77; letter-spacing:.05em; text-transform:uppercase;">
+                <div style="width:90px;">Order</div><div style="flex:1; min-width:140px;">Items</div><div style="width:130px;">Status</div><div style="width:110px; text-align:right;">Total</div><div style="width:120px; text-align:right;">Balance</div>
+              </div>
+              <sc-for list="{{ cd.orders }}" as="o" hint-placeholder-count="3">
+                <div onClick="{{ o.onOpen }}" style="display:flex; align-items:center; padding:13px 22px; border-top:1px solid #F0EFF2; cursor:pointer;" style-hover="background:#F8F7FA;">
+                  <div style="width:90px; font-weight:600; font-size:13.5px;">{{ o.id }}</div>
+                  <div style="flex:1; min-width:140px; font-size:13px; color:#6D6B77; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ o.itemsSummary }}</div>
+                  <div style="width:130px;"><span style="display:inline-block; white-space:nowrap; font-size:11.5px; font-weight:600; padding:3px 10px; border-radius:5px; background:{{ o.stageBg }}; color:{{ o.stageColor }};">{{ o.stageName }}</span></div>
+                  <div style="width:110px; text-align:right; font-weight:600; font-size:14px; font-feature-settings:'tnum';">{{ o.totalFmt }}</div>
+                  <div style="width:120px; text-align:right; font-weight:700; font-size:13.5px; color:{{ o.balColor }}; font-feature-settings:'tnum';">{{ o.balDisplay }}</div>
+                </div>
+              </sc-for>
+            </div></div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ ORDERS (TABLE) ============ -->
+      <sc-if value="{{ isOrders }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff; border-radius:16px; box-shadow:0 10px 30px rgba(80,60,140,.09); overflow:hidden;">
+          <div style="display:flex; align-items:center; gap:10px; padding:18px 22px; flex-wrap:wrap;">
+            <h3 style="margin:0; font-weight:700; font-size:16px; letter-spacing:-.01em; margin-right:6px;">Orders</h3>
+            <sc-for list="{{ orderFilters }}" as="f" hint-placeholder-count="4">
+              <button onClick="{{ f.onClick }}" style="{{ f.style }}">{{ f.label }}</button>
+            </sc-for>
+          </div>
+          <div style="overflow-x:auto;"><div style="min-width:760px;">
+            <div style="display:flex; align-items:center; padding:11px 22px; background:#F6F6F8; border-top:1px solid #E6E5E8; border-bottom:1px solid #E6E5E8; font-size:11.5px; font-weight:600; color:#6D6B77; letter-spacing:.05em; text-transform:uppercase;">
+              <div style="width:84px;">Order</div>
+              <div style="flex:1; min-width:130px;">Customer</div>
+              <div style="width:140px;">Status</div>
+              <div style="width:104px; text-align:right;">Total</div>
+              <div style="width:104px; text-align:right;">Balance</div>
+              <div style="width:84px; text-align:right;">Delivery</div>
+            </div>
+            <sc-for list="{{ orderList }}" as="o" hint-placeholder-count="8">
+              <div onClick="{{ o.onOpen }}" style="display:flex; align-items:center; padding:13px 22px; border-bottom:1px solid #F0EFF2; cursor:pointer;" style-hover="background:#F8F7FA;">
+                <div style="width:84px; font-weight:600; font-size:13.5px; color:#8C57FF;">{{ o.id }}</div>
+                <div style="flex:1; min-width:130px; display:flex; align-items:center; gap:11px;">
+                  <div style="width:34px; height:34px; border-radius:50%; background:{{ o.tagBg }}; color:{{ o.tagColor }}; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px; flex-shrink:0;">{{ o.initials }}</div>
+                  <div style="min-width:0;"><div style="font-weight:600; font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ o.customerName }}</div><div style="font-size:11.5px; color:#A5A3AE;">{{ o.typeLabel }}</div></div>
+                </div>
+                <div style="width:140px;"><span style="display:inline-block; white-space:nowrap; font-size:11.5px; font-weight:600; padding:3px 10px; border-radius:5px; background:{{ o.stageBg }}; color:{{ o.stageColor }};">{{ o.stageName }}</span></div>
+                <div style="width:104px; text-align:right; font-weight:600; font-size:14px; font-feature-settings:'tnum';">{{ o.totalFmt }}</div>
+                <div style="width:104px; text-align:right; font-weight:700; font-size:14px; color:{{ o.balColor }}; font-feature-settings:'tnum';">{{ o.balDisplay }}</div>
+                <div style="width:84px; text-align:right; font-size:13px; color:{{ o.dueColor }}; font-feature-settings:'tnum';">{{ o.deliveryFmt }}</div>
+              </div>
+            </sc-for>
+          </div></div>
+        </div>
+      </sc-if>
+
+      <!-- ============ ORDER DETAIL ============ -->
+      <sc-if value="{{ isOrderDetail }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:1040px;">
+          <a onClick="{{ goOrders }}" style="display:inline-flex; align-items:center; gap:6px; font-size:13px; color:#A5A3AE; cursor:pointer; margin-bottom:14px;" style-hover="color:#8C57FF;">← All orders</a>
+          <div class="l-grid2" style="display:grid; grid-template-columns:1.55fr 1fr; gap:20px;">
+            <div style="background:#fff; border-radius:6px; padding:22px 24px; box-shadow:0 2px 8px rgba(47,43,61,.10);">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <h2 style="margin:0; font-weight:700; font-size:22px; color:#8C57FF;">{{ od.id }}</h2>
+                <span style="font-size:11.5px; font-weight:600; padding:3px 11px; border-radius:5px; background:{{ od.stageBg }}; color:{{ od.stageColor }};">{{ od.stageName }}</span>
+                <div style="flex:1;"></div>
+                <button onClick="{{ od.onDelete }}" title="Delete order" style="display:flex; align-items:center; gap:6px; padding:7px 12px; border:1px solid #D9D8DE; border-radius:8px; background:#fff; color:#FF4C51; font-weight:600; font-size:12.5px; cursor:pointer;" style-hover="background:#FFE7E7; border-color:#FF4C51;">{{ iconTrash }} Delete</button>
+              </div>
+              <a onClick="{{ od.onOpenCustomer }}" style="font-size:14px; color:#8C57FF; cursor:pointer; font-weight:600; margin-top:4px; display:inline-block;">{{ od.customerName }}</a>
+              <div style="font-size:12.5px; color:#A5A3AE;">Ordered {{ od.orderDateFmt }} · Delivery {{ od.deliveryFmt }}</div>
+
+              <div style="display:flex; gap:6px; margin:20px 0 4px;">
+                <sc-for list="{{ od.pipeline }}" as="s" hint-placeholder-count="5">
+                  <div onClick="{{ s.onClick }}" title="{{ s.name }}" style="flex:1; cursor:pointer;">
+                    <div style="height:5px; border-radius:5px; background:{{ s.barColor }};"></div>
+                    <div style="font-size:10px; margin-top:6px; color:{{ s.textColor }}; font-weight:{{ s.weight }}; text-align:center; line-height:1.2;">{{ s.name }}</div>
+                  </div>
+                </sc-for>
+              </div>
+
+              <div style="margin-top:22px; border:1px solid #E6E5E8; border-radius:6px; overflow:hidden;">
+                <div style="display:flex; padding:10px 16px; background:#F6F6F8; font-size:11px; font-weight:600; color:#6D6B77; text-transform:uppercase; letter-spacing:.05em;">
+                  <div style="flex:1;">Item</div><div style="width:64px; text-align:center;">Qty</div><div style="width:84px; text-align:right;">Rate</div><div style="width:96px; text-align:right;">Amount</div>
+                </div>
+                <sc-for list="{{ od.items }}" as="it" hint-placeholder-count="2">
+                  <div style="display:flex; padding:12px 16px; border-top:1px solid #F0EFF2; align-items:flex-start;">
+                    <div style="flex:1;"><div style="font-weight:600; font-size:13.5px;">{{ it.category }}</div><div style="font-size:12px; color:#A5A3AE;">{{ it.description }}</div></div>
+                    <div style="width:64px; text-align:center; font-size:13.5px; font-feature-settings:'tnum';">{{ it.qtyLabel }}</div>
+                    <div style="width:84px; text-align:right; font-size:13.5px; font-feature-settings:'tnum';">{{ it.rateFmt }}</div>
+                    <div style="width:96px; text-align:right; font-weight:600; font-size:13.5px; font-feature-settings:'tnum';">{{ it.amountFmt }}</div>
+                  </div>
+                </sc-for>
+                <div style="display:flex; justify-content:space-between; padding:13px 16px; border-top:1px solid #E6E5E8; background:#FAFAFB;">
+                  <span style="font-weight:600; font-size:14px;">Total order amount</span>
+                  <span style="font-weight:700; font-size:18px; font-feature-settings:'tnum';">{{ od.totalFmt }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="background:#fff; border-radius:6px; padding:22px; box-shadow:0 2px 8px rgba(47,43,61,.10);">
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <h3 style="margin:0; font-weight:700; font-size:16px; letter-spacing:-.01em;">Payments</h3>
+                <span style="font-size:11.5px; font-weight:600; padding:3px 11px; border-radius:5px; background:{{ od.balBg }}; color:{{ od.balChipColor }};">{{ od.balChip }}</span>
+              </div>
+              <div style="display:flex; gap:12px; margin-top:16px;">
+                <div style="flex:1; background:#F6F6F8; border-radius:6px; padding:12px 14px;"><div style="font-size:11.5px; color:#A5A3AE;">Paid</div><div style="font-weight:700; font-size:18px; color:#56CA00; font-feature-settings:'tnum';">{{ od.paidFmt }}</div></div>
+                <div style="flex:1; background:#F6F6F8; border-radius:6px; padding:12px 14px;"><div style="font-size:11.5px; color:#A5A3AE;">Balance due</div><div style="font-weight:700; font-size:18px; color:{{ od.balColor }}; font-feature-settings:'tnum';">{{ od.balanceFmt }}</div></div>
+              </div>
+              <div style="margin-top:16px; display:flex; flex-direction:column;">
+                <sc-for list="{{ od.payments }}" as="p" hint-placeholder-count="2">
+                  <div style="display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid #F0EFF2;">
+                    <div style="width:34px; height:34px; border-radius:50%; background:#E5F6D8; color:#56CA00; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0;">{{ p.icon }}</div>
+                    <div style="flex:1; min-width:0;"><div style="font-weight:600; font-size:13.5px;">{{ p.typeLabel }}</div><div style="font-size:11.5px; color:#A5A3AE;">{{ p.dateFmt }} · {{ p.mode }}</div></div>
+                    <div style="font-weight:700; font-size:14px; color:#56CA00; font-feature-settings:'tnum';">{{ p.amountFmt }}</div>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ od.noPayments }}" hint-placeholder-val="{{ false }}"><div style="padding:14px 0; text-align:center; color:#A5A3AE; font-size:13px;">No payments recorded yet</div></sc-if>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:9px; margin-top:18px;">
+                <button onClick="{{ od.onRecordPayment }}" style="width:100%; padding:11px; border:none; border-radius:8px; background:#8C57FF; color:#fff; font-weight:600; font-size:14px; cursor:pointer; box-shadow:0 3px 10px rgba(140,87,255,.4);" style-hover="background:#7E4EE6;">+ Record payment</button>
+                <div style="display:flex; gap:9px;">
+                  <button onClick="{{ od.onAdvanceReceipt }}" style="flex:1; padding:10px; border:1px solid #D9D8DE; border-radius:8px; background:#fff; color:#6D6B77; font-weight:600; font-size:12.5px; cursor:pointer;" style-hover="background:#F8F7FA;">Advance receipt</button>
+                  <button onClick="{{ od.onFinalInvoice }}" style="flex:1; padding:10px; border:1px solid #D9D8DE; border-radius:8px; background:#fff; color:#6D6B77; font-weight:600; font-size:12.5px; cursor:pointer;" style-hover="background:#F8F7FA;">Final invoice</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ NEW ORDER ============ -->
+      <sc-if value="{{ isNewOrder }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:920px;">
+          <a onClick="{{ goOrders }}" style="display:inline-flex; align-items:center; gap:6px; font-size:13px; color:#A5A3AE; cursor:pointer; margin-bottom:14px;" style-hover="color:#8C57FF;">← Cancel</a>
+          <div style="background:#fff; border-radius:6px; padding:24px; box-shadow:0 2px 8px rgba(47,43,61,.10);">
+            <h2 style="margin:0 0 20px; font-weight:700; font-size:20px;">New order</h2>
+            <div class="l-grid3" style="display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:16px;">
+              <label style="display:flex; flex-direction:column; gap:6px;">
+                <span style="font-size:12.5px; font-weight:600; color:#6D6B77;">Customer</span>
+                <select value="{{ nf.customerId }}" onChange="{{ nf.onCustomer }}" style="padding:11px 12px; border:1px solid #D9D8DE; border-radius:8px; font-size:14px; background:#fff; outline:none; color:#2F2B3D;">
+                  <option value="">Select customer…</option>
+                  <sc-for list="{{ nf.customerOptions }}" as="c" hint-placeholder-count="4"><option value="{{ c.id }}">{{ c.label }}</option></sc-for>
+                </select>
+              </label>
+              <label style="display:flex; flex-direction:column; gap:6px;"><span style="font-size:12.5px; font-weight:600; color:#6D6B77;">Order date</span><input type="date" value="{{ nf.orderDate }}" onChange="{{ nf.onOrderDate }}" style="padding:11px 12px; border:1px solid #D9D8DE; border-radius:8px; font-size:14px; outline:none; color:#2F2B3D;" /></label>
+              <label style="display:flex; flex-direction:column; gap:6px;"><span style="font-size:12.5px; font-weight:600; color:#6D6B77;">Expected delivery</span><input type="date" value="{{ nf.deliveryDate }}" onChange="{{ nf.onDeliveryDate }}" style="padding:11px 12px; border:1px solid #D9D8DE; border-radius:8px; font-size:14px; outline:none; color:#2F2B3D;" /></label>
+            </div>
+
+            <h4 style="font-weight:600; font-size:14.5px; margin:24px 0 10px;">Line items</h4>
+            <div style="display:grid; grid-template-columns:1.5fr 2fr 70px 90px 100px 36px; gap:8px; padding:0 4px 8px; font-size:11px; font-weight:600; color:#6D6B77; text-transform:uppercase; letter-spacing:.05em;">
+              <div>Product</div><div>Description</div><div style="text-align:center;">Qty</div><div style="text-align:right;">Rate</div><div style="text-align:right;">Amount</div><div></div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <sc-for list="{{ nf.items }}" as="it" hint-placeholder-count="1">
+                <div style="display:grid; grid-template-columns:1.5fr 2fr 70px 90px 100px 36px; gap:8px; align-items:center;">
+                  <select value="{{ it.categoryId }}" onChange="{{ it.onCategory }}" style="padding:9px 8px; border:1px solid #D9D8DE; border-radius:8px; font-size:13px; background:#fff; outline:none;">
+                    <option value="">Product…</option>
+                    <sc-for list="{{ nf.categoryOptions }}" as="cat" hint-placeholder-count="3"><option value="{{ cat.id }}">{{ cat.name }}</option></sc-for>
+                    <option value="__new__">＋ Add new product…</option>
+                  </select>
+                  <input value="{{ it.description }}" onInput="{{ it.onDescription }}" placeholder="{{ it.descPlaceholder }}" style="padding:9px 10px; border:1px solid #D9D8DE; border-radius:8px; font-size:13px; outline:none;" />
+                  <input value="{{ it.qty }}" onInput="{{ it.onQty }}" inputmode="decimal" style="padding:9px 6px; border:1px solid #D9D8DE; border-radius:8px; font-size:13px; outline:none; text-align:center; font-feature-settings:'tnum';" />
+                  <input value="{{ it.rate }}" onInput="{{ it.onRate }}" inputmode="decimal" style="padding:9px 8px; border:1px solid #D9D8DE; border-radius:8px; font-size:13px; outline:none; text-align:right; font-feature-settings:'tnum';" />
+                  <div style="text-align:right; font-weight:600; font-size:13.5px; font-feature-settings:'tnum';">{{ it.amountFmt }}</div>
+                  <button onClick="{{ it.onRemove }}" style="width:30px; height:30px; border:1px solid #E6E5E8; background:#fff; border-radius:7px; color:#FF4C51; cursor:pointer; font-size:15px;" style-hover="background:#FFE3E4;">×</button>
+                </div>
+              </sc-for>
+            </div>
+            <button onClick="{{ nf.onAddItem }}" style="margin-top:12px; padding:9px 14px; border:1px dashed #C9C7D0; background:#fff; border-radius:8px; color:#8C57FF; font-weight:600; font-size:13px; cursor:pointer;" style-hover="background:#F6F2FF;">+ Add line item</button>
+
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-top:24px; padding-top:18px; border-top:1px solid #E6E5E8;">
+              <div><div style="font-size:12.5px; color:#A5A3AE;">Total order amount</div><div style="font-weight:700; font-size:25px; font-feature-settings:'tnum';">{{ nf.totalFmt }}</div></div>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <sc-if value="{{ nf.error }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px; color:#FF4C51; font-weight:600;">{{ nf.errorMsg }}</span></sc-if>
+                <button onClick="{{ nf.onSave }}" style="padding:13px 26px; border:none; border-radius:8px; background:#8C57FF; color:#fff; font-weight:600; font-size:14.5px; cursor:pointer; box-shadow:0 3px 10px rgba(140,87,255,.4);" style-hover="background:#7E4EE6;">Create order</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ PRODUCTS (TABLE) ============ -->
+      <sc-if value="{{ isProducts }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff; border-radius:16px; box-shadow:0 10px 30px rgba(80,60,140,.09); overflow:hidden;">
+          <div style="display:flex; align-items:center; gap:10px; padding:18px 22px;">
+            <h3 style="margin:0; font-weight:700; font-size:16px; letter-spacing:-.01em;">Products</h3>
+            <div style="flex:1;"></div>
+            <button onClick="{{ onAddProduct }}" style="display:flex; align-items:center; gap:7px; padding:9px 16px; border:none; border-radius:8px; background:#8C57FF; color:#fff; font-weight:600; font-size:13.5px; cursor:pointer; box-shadow:0 3px 10px rgba(140,87,255,.4);" style-hover="background:#7E4EE6;"><span style="font-size:16px; line-height:1;">+</span> Add product</button>
+          </div>
+          <div style="overflow-x:auto;"><div style="min-width:940px;">
+            <div style="display:flex; align-items:center; padding:11px 22px; background:#F6F6F8; border-top:1px solid #E6E5E8; border-bottom:1px solid #E6E5E8; font-size:11.5px; font-weight:600; color:#6D6B77; letter-spacing:.05em; text-transform:uppercase;">
+              <div style="flex:1.6; min-width:190px;">Product</div>
+              <div style="width:120px;">Pricing basis</div>
+              <div style="width:110px; text-align:right;">Purchase</div>
+              <div style="width:110px; text-align:right;">Sale price</div>
+              <div style="width:115px; text-align:right;">Margin</div>
+              <div style="width:130px; text-align:right;">In stock</div>
+              <div style="width:84px; text-align:center;">Actions</div>
+            </div>
+            <sc-for list="{{ products }}" as="r" hint-placeholder-count="10">
+              <div style="display:flex; align-items:center; padding:13px 22px; border-bottom:1px solid #F0EFF2;" style-hover="background:#F8F7FA;">
+                <div style="flex:1.6; min-width:190px; display:flex; align-items:center; gap:12px;">
+                  <div style="width:38px; height:38px; border-radius:8px; background:#EDE3FF; color:#8C57FF; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex-shrink:0;">{{ r.initials }}</div>
+                  <div style="min-width:0;"><div style="font-weight:600; font-size:14px;">{{ r.name }}</div><div style="font-size:12px; color:#A5A3AE;">{{ r.code }}</div></div>
+                </div>
+                <div style="width:120px; font-size:13.5px; color:#6D6B77;">{{ r.unitLabel }}</div>
+                <div style="width:110px; text-align:right; font-size:14px; color:#6D6B77; font-feature-settings:'tnum';">{{ r.purchaseFmt }}</div>
+                <div style="width:110px; text-align:right; font-weight:700; font-size:14px; font-feature-settings:'tnum';">{{ r.saleFmt }}</div>
+                <div style="width:115px; text-align:right; font-feature-settings:'tnum';"><span style="font-weight:600; font-size:13.5px; color:{{ r.marginColor }};">{{ r.marginFmt }}</span> <span style="font-size:11.5px; color:#A5A3AE;">{{ r.marginPct }}</span></div>
+                <div style="width:130px; text-align:right; display:flex; align-items:center; justify-content:flex-end; gap:8px;">
+                  <span style="font-weight:600; font-size:13.5px; color:{{ r.stockColor }}; font-feature-settings:'tnum';">{{ r.stockLabel }}</span>
+                  <span style="display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:5px; background:{{ r.stockBadgeBg }}; color:{{ r.stockBadgeColor }};">{{ r.stockBadge }}</span>
+                </div>
+                <div style="width:84px; display:flex; align-items:center; justify-content:center; gap:6px;">
+                  <button onClick="{{ r.onEdit }}" title="Edit" style="width:30px; height:30px; border:1px solid #EAE9ED; background:#fff; border-radius:7px; cursor:pointer; display:flex; align-items:center; justify-content:center;" style-hover="background:#F2EBFF; border-color:#8C57FF;">{{ iconEdit }}</button>
+                  <button onClick="{{ r.onDelete }}" title="Delete" style="width:30px; height:30px; border:1px solid #EAE9ED; background:#fff; border-radius:7px; cursor:pointer; display:flex; align-items:center; justify-content:center;" style-hover="background:#FFE7E7; border-color:#FF4C51;">{{ iconTrash }}</button>
+                </div>
+              </div>
+            </sc-for>
+          </div></div>
+        </div>
+      </sc-if>
+
+      <!-- ============ REPORTS ============ -->
+      <sc-if value="{{ isReports }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <sc-if value="{{ reportsLocked }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fff; border-radius:6px; padding:48px; text-align:center; box-shadow:0 2px 8px rgba(47,43,61,.10);">
+              <div style="font-size:34px;">🔒</div>
+              <h3 style="font-weight:600; font-size:18px; margin:12px 0 6px;">Reports are restricted</h3>
+              <div style="font-size:13.5px; color:#A5A3AE;">Financial reports are visible to the Owner only. Switch role (top-right) to view.</div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ reportsVisible }}" hint-placeholder-val="{{ true }}">
+            <div class="l-grid2" style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+              <div style="background:#fff; border-radius:6px; padding:22px; box-shadow:0 2px 8px rgba(47,43,61,.10);">
+                <h3 style="margin:0 0 16px; font-weight:700; font-size:16px; letter-spacing:-.01em;">Category-wise sales</h3>
+                <div style="display:flex; flex-direction:column; gap:13px;">
+                  <sc-for list="{{ catSales }}" as="c" hint-placeholder-count="6">
+                    <div>
+                      <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:5px;"><span style="font-weight:500;">{{ c.name }}</span><span style="font-weight:700; font-feature-settings:'tnum';">{{ c.amountFmt }}</span></div>
+                      <div style="height:8px; border-radius:5px; background:#F0EFF2; overflow:hidden;"><div style="height:100%; width:{{ c.pct }}; border-radius:5px; background:#8C57FF;"></div></div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:20px;">
+                <div style="background:#fff; border-radius:6px; padding:22px; box-shadow:0 2px 8px rgba(47,43,61,.10);">
+                  <h3 style="margin:0 0 16px; font-weight:700; font-size:16px; letter-spacing:-.01em;">Customer-type split</h3>
+                  <div style="height:12px; border-radius:6px; overflow:hidden; display:flex;"><div style="width:{{ split.b2bPct }}; background:#8C57FF;"></div><div style="width:{{ split.b2cPct }}; background:#16B1FF;"></div></div>
+                  <div style="display:flex; gap:20px; margin-top:14px;">
+                    <div style="flex:1;"><div style="display:flex; align-items:center; gap:7px;"><span style="width:9px; height:9px; border-radius:3px; background:#8C57FF;"></span><span style="font-size:12.5px; color:#A5A3AE;">Shop / Business</span></div><div style="font-weight:700; font-size:18px; margin-top:3px; font-feature-settings:'tnum';">{{ split.b2bFmt }}</div></div>
+                    <div style="flex:1;"><div style="display:flex; align-items:center; gap:7px;"><span style="width:9px; height:9px; border-radius:3px; background:#16B1FF;"></span><span style="font-size:12.5px; color:#A5A3AE;">Individual</span></div><div style="font-weight:700; font-size:18px; margin-top:3px; font-feature-settings:'tnum';">{{ split.b2cFmt }}</div></div>
+                  </div>
+                </div>
+                <div style="background:#fff; border-radius:6px; padding:22px; box-shadow:0 2px 8px rgba(47,43,61,.10);">
+                  <h3 style="margin:0 0 14px; font-weight:700; font-size:16px; letter-spacing:-.01em;">This month</h3>
+                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                    <div><div style="font-size:12px; color:#A5A3AE;">Total billed</div><div style="font-weight:700; font-size:20px; font-feature-settings:'tnum';">{{ monthly.billed }}</div></div>
+                    <div><div style="font-size:12px; color:#A5A3AE;">Collected</div><div style="font-weight:700; font-size:20px; color:#56CA00; font-feature-settings:'tnum';">{{ monthly.collected }}</div></div>
+                    <div><div style="font-size:12px; color:#A5A3AE;">Outstanding</div><div style="font-weight:700; font-size:20px; color:#FF4C51; font-feature-settings:'tnum';">{{ monthly.pending }}</div></div>
+                    <div><div style="font-size:12px; color:#A5A3AE;">Orders</div><div style="font-weight:700; font-size:20px; font-feature-settings:'tnum';">{{ monthly.orders }}</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+    </div>
+  </main>
+
+  <!-- ===================== PAYMENT MODAL ===================== -->
+  <sc-if value="{{ payModalOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ pm.onBackdrop }}" style="position:fixed; inset:0; background:rgba(47,43,61,.5); display:flex; align-items:center; justify-content:center; z-index:60;">
+      <div onClick="{{ pm.stop }}" style="width:430px; max-width:92vw; background:#fff; border-radius:18px; padding:26px; box-shadow:0 24px 60px rgba(40,28,70,.34);">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <h3 style="margin:0; font-weight:700; font-size:18px;">Record payment</h3>
+          <button onClick="{{ pm.onClose }}" style="background:#F0EFF2; border:none; width:32px; height:32px; border-radius:7px; cursor:pointer; font-size:16px; color:#6D6B77;">×</button>
+        </div>
+        <div style="font-size:13px; color:#A5A3AE; margin-top:4px;">{{ pm.orderLabel }} · Balance due {{ pm.balanceFmt }}</div>
+        <label style="display:flex; flex-direction:column; gap:6px; margin-top:18px;"><span style="font-size:12.5px; font-weight:600; color:#6D6B77;">Amount (₹)</span><input value="{{ pm.amount }}" onInput="{{ pm.onAmount }}" inputmode="decimal" placeholder="0" style="padding:13px 14px; border:1px solid #D9D8DE; border-radius:8px; font-size:18px; font-weight:700; outline:none; font-feature-settings:'tnum';" /></label>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px;">
+          <label style="display:flex; flex-direction:column; gap:6px;"><span style="font-size:12.5px; font-weight:600; color:#6D6B77;">Type</span><select value="{{ pm.type }}" onChange="{{ pm.onType }}" style="padding:11px 12px; border:1px solid #D9D8DE; border-radius:8px; font-size:14px; background:#fff; outline:none;"><option value="Advance">Advance</option><option value="Partial">Partial</option><option value="Final Balance">Final Balance</option></select></label>
+          <label style="display:flex; flex-direction:column; gap:6px;"><span style="font-size:12.5px; font-weight:600; color:#6D6B77;">Mode</span><select value="{{ pm.mode }}" onChange="{{ pm.onMode }}" style="padding:11px 12px; border:1px solid #D9D8DE; border-radius:8px; font-size:14px; background:#fff; outline:none;"><option value="Cash">Cash</option><option value="UPI">UPI</option><option value="Bank Transfer">Bank Transfer</option><option value="Cheque">Cheque</option></select></label>
+        </div>
+        <label style="display:flex; flex-direction:column; gap:6px; margin-top:14px;"><span style="font-size:12.5px; font-weight:600; color:#6D6B77;">Date</span><input type="date" value="{{ pm.date }}" onChange="{{ pm.onDate }}" style="padding:11px 12px; border:1px solid #D9D8DE; border-radius:8px; font-size:14px; outline:none;" /></label>
+        <div style="display:flex; gap:6px; margin-top:14px;">
+          <sc-for list="{{ pm.quickAmounts }}" as="q" hint-placeholder-count="3"><button onClick="{{ q.onClick }}" style="flex:1; padding:8px; border:1px solid #E6E5E8; background:#fff; border-radius:7px; font-size:12.5px; font-weight:600; color:#6D6B77; cursor:pointer;" style-hover="border-color:#8C57FF; color:#8C57FF;">{{ q.label }}</button></sc-for>
+        </div>
+        <button onClick="{{ pm.onSave }}" style="width:100%; margin-top:20px; padding:14px; border:none; border-radius:8px; background:#8C57FF; color:#fff; font-weight:600; font-size:15px; cursor:pointer; box-shadow:0 3px 10px rgba(140,87,255,.4);" style-hover="background:#7E4EE6;">Save payment</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ===================== CONFIRM DELETE MODAL ===================== -->
+  <sc-if value="{{ confirmModalOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ confirm.onBackdrop }}" style="position:fixed; inset:0; background:rgba(47,43,61,.5); display:flex; align-items:center; justify-content:center; z-index:70;">
+      <div onClick="{{ confirm.stop }}" style="width:400px; max-width:92vw; background:#fff; border-radius:18px; padding:26px; box-shadow:0 24px 60px rgba(40,28,70,.34);">
+        <div style="width:46px; height:46px; border-radius:50%; background:#FFE3E4; color:#FF4C51; display:flex; align-items:center; justify-content:center; font-size:22px;">⚠</div>
+        <h3 style="margin:16px 0 6px; font-weight:700; font-size:18px;">{{ confirm.label }}</h3>
+        <div style="font-size:13.5px; color:#6D6B77; line-height:1.5;">{{ confirm.sub }}</div>
+        <div style="display:flex; gap:10px; margin-top:22px;">
+          <button onClick="{{ confirm.onCancel }}" style="flex:1; padding:12px; border:1px solid #D9D8DE; border-radius:8px; background:#fff; color:#6D6B77; font-weight:600; font-size:14px; cursor:pointer;" style-hover="background:#F6F6F8;">Cancel</button>
+          <button onClick="{{ confirm.onConfirm }}" style="flex:1; padding:12px; border:none; border-radius:8px; background:#FF4C51; color:#fff; font-weight:600; font-size:14px; cursor:pointer; box-shadow:0 3px 10px rgba(255,76,81,.4);" style-hover="background:#E83E43;">Delete</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ===================== ADD CUSTOMER MODAL ===================== -->
+  <sc-if value="{{ customerModalOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ cm.onBackdrop }}" style="position:fixed; inset:0; background:rgba(47,43,61,.5); display:flex; align-items:flex-start; justify-content:center; z-index:60; overflow:auto; padding:30px 20px;">
+      <div onClick="{{ cm.stop }}" style="width:460px; max-width:92vw; background:#fff; border-radius:18px; padding:26px; box-shadow:0 24px 60px rgba(40,28,70,.34);">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <h3 style="margin:0; font-weight:700; font-size:18px;">{{ cm.title }}</h3>
+          <button onClick="{{ cm.onClose }}" style="background:#F0EFF2; border:none; width:32px; height:32px; border-radius:7px; cursor:pointer; font-size:16px; color:#6D6B77;">×</button>
+        </div>
+        <div style="display:flex; gap:9px; margin-top:18px;">
+          <button onClick="{{ cm.onShop }}" style="{{ cm.typeShopStyle }}">Shop / Business</button>
+          <button onClick="{{ cm.onIndiv }}" style="{{ cm.typeIndivStyle }}">Individual</button>
+        </div>
+        <label style="display:flex; flex-direction:column; gap:6px; margin-top:14px;"><span style="font-size:12.5px; font-weight:600; color:#6D6B77;">Business / customer name</span><input value="{{ cm.name }}" onInput="{{ cm.onName }}" placeholder="e.g. Sri Balaji Stores" style="padding:11px 13px; border:1px solid #D9D8DE; border-radius:8px; font-size:14px; outline:none;" /></label>
+        <sc-if value="{{ cm.isB2B }}" hint-placeholder-val="{{ true }}">
+          <label style="display:flex; flex-direction:column; gap:6px; margin-top:14px;"><span style="font-size:12.5px; font-weight:600; color:#6D6B77;">Contact person</span><input value="{{ cm.contact }}" onInput="{{ cm.onContact }}" placeholder="e.g. Senthil Kumar" style="padding:11px 13px; border:1px solid #D9D8DE; border-radius:8px; font-size:14px; outline:none;" /></label>
+        </sc-if>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px;">
+          <label style="display:flex; flex-direction:column; gap:6px;"><span style="font-size:12.5px; font-weight:600; color:#6D6B77;">Phone</span><input value="{{ cm.phone }}" onInput="{{ cm.onPhone }}" placeholder="+91 …" style="padding:11px 12px; border:1px solid #D9D8DE; border-radius:8px; font-size:14px; outline:none; font-feature-settings:'tnum';" /></label>
+          <label style="display:flex; flex-direction:column; gap:6px;"><span style="font-size:12.5px; font-weight:600; color:#6D6B77;">Area / Address</span><input value="{{ cm.address }}" onInput="{{ cm.onAddress }}" placeholder="e.g. Gandhipuram, Coimbatore" style="padding:11px 12px; border:1px solid #D9D8DE; border-radius:8px; font-size:14px; outline:none;" /></label>
+        </div>
+        <sc-if value="{{ cm.isB2B }}" hint-placeholder-val="{{ true }}">
+          <label style="display:flex; flex-direction:column; gap:6px; margin-top:14px;"><span style="font-size:12.5px; font-weight:600; color:#6D6B77;">GSTIN <span style="color:#A5A3AE; font-weight:500;">(optional)</span></span><input value="{{ cm.gst }}" onInput="{{ cm.onGst }}" placeholder="33ABCDE1234F1Z5" style="padding:11px 12px; border:1px solid #D9D8DE; border-radius:8px; font-size:14px; outline:none; font-feature-settings:'tnum';" /></label>
+        </sc-if>
+        <label style="display:flex; flex-direction:column; gap:6px; margin-top:14px;"><span style="font-size:12.5px; font-weight:600; color:#6D6B77;">Notes <span style="color:#A5A3AE; font-weight:500;">(optional)</span></span><input value="{{ cm.notes }}" onInput="{{ cm.onNotes }}" placeholder="Preferences, payment terms…" style="padding:11px 12px; border:1px solid #D9D8DE; border-radius:8px; font-size:14px; outline:none;" /></label>
+        <sc-if value="{{ cm.error }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px; color:#FF4C51; font-weight:600; margin-top:12px;">Enter a name and phone number.</div></sc-if>
+        <button onClick="{{ cm.onSave }}" style="width:100%; margin-top:20px; padding:14px; border:none; border-radius:8px; background:#8C57FF; color:#fff; font-weight:600; font-size:15px; cursor:pointer; box-shadow:0 3px 10px rgba(140,87,255,.4);" style-hover="background:#7E4EE6;">{{ cm.saveLabel }}</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ===================== ADD PRODUCT MODAL ===================== -->
+  <sc-if value="{{ productModalOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ pmp.onBackdrop }}" style="position:fixed; inset:0; background:rgba(47,43,61,.5); display:flex; align-items:center; justify-content:center; z-index:60;">
+      <div onClick="{{ pmp.stop }}" style="width:440px; max-width:92vw; background:#fff; border-radius:18px; padding:26px; box-shadow:0 24px 60px rgba(40,28,70,.34);">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <h3 style="margin:0; font-weight:700; font-size:18px;">{{ pmp.title }}</h3>
+          <button onClick="{{ pmp.onClose }}" style="background:#F0EFF2; border:none; width:32px; height:32px; border-radius:7px; cursor:pointer; font-size:16px; color:#6D6B77;">×</button>
+        </div>
+        <label style="display:flex; flex-direction:column; gap:6px; margin-top:18px;"><span style="font-size:12.5px; font-weight:600; color:#6D6B77;">Product name</span><input value="{{ pmp.name }}" onInput="{{ pmp.onName }}" placeholder="e.g. Acrylic Name Boards" style="padding:11px 13px; border:1px solid #D9D8DE; border-radius:8px; font-size:14px; outline:none;" /></label>
+        <label style="display:flex; flex-direction:column; gap:6px; margin-top:14px;"><span style="font-size:12.5px; font-weight:600; color:#6D6B77;">Pricing basis</span>
+          <select value="{{ pmp.unit }}" onChange="{{ pmp.onUnit }}" style="padding:11px 12px; border:1px solid #D9D8DE; border-radius:8px; font-size:14px; background:#fff; outline:none;">
+            <option value="per sq.ft">Per sq.ft</option>
+            <option value="per letter">Per letter</option>
+            <option value="per piece">Per piece</option>
+            <option value="per design">Per design</option>
+          </select>
+        </label>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px;">
+          <label style="display:flex; flex-direction:column; gap:6px;"><span style="font-size:12.5px; font-weight:600; color:#6D6B77;">Purchase price (₹)</span><input value="{{ pmp.cost }}" onInput="{{ pmp.onCost }}" inputmode="decimal" placeholder="Cost" style="padding:11px 12px; border:1px solid #D9D8DE; border-radius:8px; font-size:14px; outline:none; font-feature-settings:'tnum';" /></label>
+          <label style="display:flex; flex-direction:column; gap:6px;"><span style="font-size:12.5px; font-weight:600; color:#6D6B77;">Sale price (₹)</span><input value="{{ pmp.rate }}" onInput="{{ pmp.onRate }}" inputmode="decimal" placeholder="Rate" style="padding:11px 12px; border:1px solid #D9D8DE; border-radius:8px; font-size:14px; outline:none; font-feature-settings:'tnum';" /></label>
+        </div>
+        <label style="display:flex; flex-direction:column; gap:6px; margin-top:14px;"><span style="font-size:12.5px; font-weight:600; color:#6D6B77;">Stock quantity</span><input value="{{ pmp.stock }}" onInput="{{ pmp.onStock }}" inputmode="decimal" placeholder="On-hand qty" style="padding:11px 12px; border:1px solid #D9D8DE; border-radius:8px; font-size:14px; outline:none; font-feature-settings:'tnum';" /></label>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:14px; padding:10px 13px; background:#F6F6F8; border-radius:8px;">
+          <span style="font-size:12.5px; color:#6D6B77;">Margin per unit</span>
+          <span style="font-weight:700; font-size:14px; color:#56CA00; font-feature-settings:'tnum';">{{ pmp.marginFmt }}</span>
+        </div>
+        <sc-if value="{{ pmp.error }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px; color:#FF4C51; font-weight:600; margin-top:12px;">Enter a product name and sale price.</div></sc-if>
+        <button onClick="{{ pmp.onSave }}" style="width:100%; margin-top:20px; padding:14px; border:none; border-radius:8px; background:#8C57FF; color:#fff; font-weight:600; font-size:15px; cursor:pointer; box-shadow:0 3px 10px rgba(140,87,255,.4);" style-hover="background:#7E4EE6;">{{ pmp.saveLabel }}</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ===================== INVOICE MODAL ===================== -->
+  <sc-if value="{{ invModalOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ inv.onBackdrop }}" style="position:fixed; inset:0; background:rgba(47,43,61,.55); display:flex; align-items:flex-start; justify-content:center; z-index:60; overflow:auto; padding:34px 20px;">
+      <div onClick="{{ inv.stop }}" style="width:640px; max-width:96vw;">
+        <div style="display:flex; justify-content:flex-end; gap:9px; margin-bottom:12px;">
+          <button onClick="{{ inv.onPrint }}" style="padding:10px 18px; border:none; border-radius:8px; background:#fff; color:#2F2B3D; font-weight:600; font-size:13.5px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,.18);">🖨 Print / Save PDF</button>
+          <button onClick="{{ inv.onClose }}" style="padding:10px 16px; border:none; border-radius:8px; background:#8C57FF; color:#fff; font-weight:600; font-size:13.5px; cursor:pointer;">Close</button>
+        </div>
+        <div id="invoice-paper" style="background:#fff; border-radius:8px; padding:42px 44px; box-shadow:0 12px 40px rgba(47,43,61,.35); color:#2F2B3D;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #2F2B3D; padding-bottom:20px;">
+            <div style="display:flex; gap:13px; align-items:center;">
+              <div style="width:46px; height:46px; border-radius:10px; background:linear-gradient(72deg,#8C57FF,#A379FF); display:flex; align-items:center; justify-content:center;"><span style="font-weight:800; font-size:23px; color:#fff;">L</span></div>
+              <div><div style="font-weight:800; font-size:21px;">Lukky Enterprises</div><div style="font-size:11.5px; color:#6D6B77; line-height:1.5; margin-top:2px;">Custom Signage &amp; Fabrication<br>Gandhipuram, Coimbatore – 641012 · +91 98430 11225</div></div>
+            </div>
+            <div style="text-align:right;"><div style="font-weight:700; font-size:18px; color:{{ inv.titleColor }};">{{ inv.docTitle }}</div><div style="font-size:12px; color:#6D6B77; margin-top:3px;">No. {{ inv.docNo }}</div><div style="font-size:12px; color:#6D6B77;">{{ inv.dateFmt }}</div></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-top:22px;">
+            <div>
+              <div style="font-size:10.5px; font-weight:700; color:#A5A3AE; letter-spacing:.08em; text-transform:uppercase;">Bill To</div>
+              <div style="font-weight:700; font-size:15px; margin-top:5px;">{{ inv.customerName }}</div>
+              <div style="font-size:12.5px; color:#6D6B77; line-height:1.5; margin-top:2px;">{{ inv.customerAddress }}<br>{{ inv.customerPhone }}</div>
+              <sc-if value="{{ inv.hasGst }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px; color:#6D6B77; margin-top:3px;">GSTIN: {{ inv.customerGst }}</div></sc-if>
+            </div>
+            <div style="text-align:right;"><div style="font-size:10.5px; font-weight:700; color:#A5A3AE; letter-spacing:.08em; text-transform:uppercase;">Order</div><div style="font-weight:700; font-size:14px; margin-top:5px;">{{ inv.orderId }}</div><div style="font-size:12px; color:#6D6B77;">Delivery: {{ inv.deliveryFmt }}</div></div>
+          </div>
+          <table style="width:100%; border-collapse:collapse; margin-top:22px; font-size:12.5px;">
+            <thead><tr style="background:#F6F6F8;">
+              <th style="text-align:left; padding:10px 12px; font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; color:#A5A3AE; border-bottom:1px solid #E6E5E8;">Description</th>
+              <th style="text-align:center; padding:10px 8px; font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; color:#A5A3AE; border-bottom:1px solid #E6E5E8;">Qty</th>
+              <th style="text-align:right; padding:10px 8px; font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; color:#A5A3AE; border-bottom:1px solid #E6E5E8;">Rate</th>
+              <th style="text-align:right; padding:10px 12px; font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; color:#A5A3AE; border-bottom:1px solid #E6E5E8;">Amount</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ inv.items }}" as="it" hint-placeholder-count="2">
+                <tr>
+                  <td style="padding:11px 12px; border-bottom:1px solid #F0EFF2;"><div style="font-weight:600;">{{ it.category }}</div><div style="font-size:11.5px; color:#A5A3AE;">{{ it.description }}</div></td>
+                  <td style="text-align:center; padding:11px 8px; border-bottom:1px solid #F0EFF2; font-feature-settings:'tnum';">{{ it.qtyLabel }}</td>
+                  <td style="text-align:right; padding:11px 8px; border-bottom:1px solid #F0EFF2; font-feature-settings:'tnum';">{{ it.rateFmt }}</td>
+                  <td style="text-align:right; padding:11px 12px; border-bottom:1px solid #F0EFF2; font-weight:600; font-feature-settings:'tnum';">{{ it.amountFmt }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <div style="display:flex; justify-content:flex-end; margin-top:16px;">
+            <div style="width:280px;">
+              <sc-if value="{{ inv.hasGst }}" hint-placeholder-val="{{ false }}">
+                <div>
+                  <div style="display:flex; justify-content:space-between; padding:5px 0; font-size:13px;"><span style="color:#6D6B77;">Taxable value</span><span style="font-feature-settings:'tnum';">{{ inv.taxableFmt }}</span></div>
+                  <div style="display:flex; justify-content:space-between; padding:5px 0; font-size:13px;"><span style="color:#6D6B77;">CGST @ 9%</span><span style="font-feature-settings:'tnum';">{{ inv.cgstFmt }}</span></div>
+                  <div style="display:flex; justify-content:space-between; padding:5px 0; font-size:13px;"><span style="color:#6D6B77;">SGST @ 9%</span><span style="font-feature-settings:'tnum';">{{ inv.sgstFmt }}</span></div>
+                </div>
+              </sc-if>
+              <div style="display:flex; justify-content:space-between; padding:10px 0; border-top:1.5px solid #2F2B3D; margin-top:5px; font-weight:700; font-size:15px;"><span>Total</span><span style="font-feature-settings:'tnum';">{{ inv.totalFmt }}</span></div>
+              <div style="display:flex; justify-content:space-between; padding:5px 0; font-size:13px;"><span style="color:#56CA00;">Paid</span><span style="color:#56CA00; font-feature-settings:'tnum';">{{ inv.paidFmt }}</span></div>
+              <div style="display:flex; justify-content:space-between; padding:9px 12px; margin-top:6px; background:{{ inv.balBg }}; border-radius:6px; font-weight:700; font-size:15px; color:{{ inv.balColor }};"><span>{{ inv.balLabel }}</span><span style="font-feature-settings:'tnum';">{{ inv.balanceFmt }}</span></div>
+            </div>
+          </div>
+          <div style="margin-top:34px; display:flex; justify-content:space-between; align-items:flex-end;">
+            <div style="font-size:11px; color:#A5A3AE; max-width:300px; line-height:1.6;">{{ inv.footNote }}</div>
+            <div style="text-align:center;"><div style="width:150px; border-top:1px solid #C9C7D0; padding-top:6px; font-size:11.5px; color:#6D6B77;">Authorised Signatory</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:820}}">
+class Component extends DCLogic {
+  inr(n) {
+    if (n == null || isNaN(n)) n = 0;
+    n = Math.round(n);
+    const neg = n < 0; n = Math.abs(n);
+    let s = String(n);
+    let last3 = s.slice(-3), rest = s.slice(0, -3);
+    if (rest) last3 = ',' + last3;
+    rest = rest.replace(/\B(?=(\d{2})+(?!\d))/g, ',');
+    return '₹' + (neg ? '-' : '') + rest + last3;
+  }
+  parseDate(s) { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); }
+  fmtDate(s) { if (!s) return '—'; const d = this.parseDate(s); const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return d.getDate() + ' ' + mo[d.getMonth()] + ' ' + d.getFullYear(); }
+  fmtDateShort(s) { if (!s) return '—'; const d = this.parseDate(s); const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return d.getDate() + ' ' + mo[d.getMonth()]; }
+  daysFromToday(s) { return Math.round((this.parseDate(s) - this.NOW) / 86400000); }
+  ico(name, color, size) {
+    color = color || 'currentColor'; size = size || 18;
+    const P = (d) => React.createElement('path', { d, fill: 'none', stroke: color, strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round' });
+    const C = (cx, cy, r) => React.createElement('circle', { cx, cy, r, fill: 'none', stroke: color, strokeWidth: 1.7 });
+    const map = {
+      dashboard: [P('M3 13h7V3H3zM14 21h7V3h-7zM3 21h7v-5H3z')],
+      customers: [C(9, 8, 3.2), P('M3.5 19c0-2.6 2.4-4.5 5.5-4.5s5.5 1.9 5.5 4.5'), P('M16.5 5.2A2.7 2.7 0 0118 10'), P('M17.5 14.6c2 .5 3.5 1.9 3.5 4.4')],
+      orders: [P('M8 4h8a2 2 0 012 2v13a2 2 0 01-2 2H8a2 2 0 01-2-2V6a2 2 0 012-2z'), P('M9 3.5h6v3H9z'), P('M9.5 11h5M9.5 15h3')],
+      products: [P('M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8')],
+      reports: [P('M4 20V10M10 20V4M16 20v-7M22 20H2')],
+      wallet: [P('M3 7a2 2 0 012-2h12a2 2 0 012 2v1M3 7v10a2 2 0 002 2h14a2 2 0 002-2v-6a2 2 0 00-2-2H5a2 2 0 00-2-2z'), C(17, 13, 1.1)],
+      cash: [P('M3 6h18v12H3z'), C(12, 12, 2.4), P('M6 9v.01M18 15v.01')],
+      cart: [P('M3 4h2l2.5 12h10L20 7H6'), C(9, 19, 1.1), C(17, 19, 1.1)],
+      users: [C(9, 8, 3.2), P('M3.5 19c0-2.6 2.4-4.5 5.5-4.5s5.5 1.9 5.5 4.5'), P('M16.5 5.2A2.7 2.7 0 0118 10'), P('M17.5 14.6c2 .5 3.5 1.9 3.5 4.4')],
+      truck: [P('M3 6h11v9H3zM14 9h4l3 3v3h-7z'), C(7, 18, 1.4), C(17, 18, 1.4)],
+      clock: [C(12, 12, 8), P('M12 8v4l3 2')],
+      edit: [P('M4 20h4L18.5 9.5a2 2 0 00-2.83-2.83L5 17.5V20z'), P('M14.5 6.5l3 3')],
+      trash: [P('M4 7h16M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m-7 0v12a1 1 0 001 1h6a1 1 0 001-1V7'), P('M10 11v6M14 11v6')],
+    };
+    return React.createElement('svg', { width: size, height: size, viewBox: '0 0 24 24' }, ...(map[name] || []));
+  }
+
+  state = (() => {
+    const customers = [
+      { id: 'C-1001', name: 'Sri Murugan Textiles', type: 'B2B', contact: 'Senthil Kumar', phone: '+91 98430 22145', address: 'Gandhipuram, Coimbatore', area: 'Gandhipuram', gst: '33ABLPS4521R1ZP', notes: 'Repeat bulk orders, prefers UPI' },
+      { id: 'C-1002', name: 'Annapoorna Sweets & Snacks', type: 'B2B', contact: 'Rajesh Babu', phone: '+91 90031 55218', address: 'Town Hall, Coimbatore', area: 'Town Hall', gst: '33AAEPA8842K1Z9', notes: '' },
+      { id: 'C-1003', name: 'RKV Hardware & Paints', type: 'B2B', contact: 'Vetrivel M', phone: '+91 99947 88210', address: 'Mettupalayam Road, Coimbatore', area: 'Mettupalayam Rd', gst: '', notes: 'GST pending' },
+      { id: 'C-1004', name: 'Lakshmi Jewellers', type: 'B2B', contact: 'Bala Subramaniam', phone: '+91 98942 31100', address: 'Oppanakara St, Coimbatore', area: 'Oppanakara St', gst: '33AALFL2210M1Z4', notes: 'Premium finish only' },
+      { id: 'C-2001', name: 'Karthik Raman', type: 'B2C', contact: '', phone: '+91 99435 67012', address: 'R.S. Puram, Coimbatore', area: 'R.S. Puram', gst: '', notes: '' },
+      { id: 'C-2002', name: 'Priya Dharshini', type: 'B2C', contact: '', phone: '+91 73975 14260', address: 'Saibaba Colony, Coimbatore', area: 'Saibaba Colony', gst: '', notes: 'God idol for housewarming' },
+      { id: 'C-2003', name: 'Mohammed Irfan', type: 'B2C', contact: '', phone: '+91 96265 33891', address: 'Ukkadam, Coimbatore', area: 'Ukkadam', gst: '', notes: '' },
+      { id: 'C-2004', name: 'Deepa Lakshmi', type: 'B2C', contact: '', phone: '+91 90420 78451', address: 'Singanallur, Coimbatore', area: 'Singanallur', gst: '', notes: '' },
+    ];
+    const categories = [
+      { id: 'CAT1', name: 'LED Lighting Boards', unit: 'per sq.ft', cost: 300, rate: 450, stock: 120, lowAt: 40 },
+      { id: 'CAT2', name: 'Titanium Letters', unit: 'per letter', cost: 430, rate: 650, stock: 18, lowAt: 25 },
+      { id: 'CAT3', name: 'Brass Letters', unit: 'per letter', cost: 360, rate: 550, stock: 64, lowAt: 25 },
+      { id: 'CAT4', name: 'Aluminium Letters', unit: 'per letter', cost: 175, rate: 280, stock: 90, lowAt: 25 },
+      { id: 'CAT5', name: 'Sign Boards', unit: 'per sq.ft', cost: 110, rate: 180, stock: 210, lowAt: 50 },
+      { id: 'CAT6', name: 'CNC Door Designing', unit: 'per design', cost: 2400, rate: 3500, stock: 5, lowAt: 3 },
+      { id: 'CAT7', name: 'God Idols', unit: 'per piece', cost: 1800, rate: 2500, stock: 7, lowAt: 5 },
+      { id: 'CAT8', name: 'Party Flags', unit: 'per piece', cost: 28, rate: 45, stock: 640, lowAt: 100 },
+      { id: 'CAT9', name: 'Rubber Stamp', unit: 'per piece', cost: 150, rate: 250, stock: 22, lowAt: 30 },
+      { id: 'CAT10', name: 'Stone Engraving (Kalvettu)', unit: 'per sq.ft', cost: 600, rate: 900, stock: 35, lowAt: 20 },
+    ];
+    const I = (cat, desc, qty, rate) => ({ category: cat, description: desc, qty, rate, amount: qty * rate });
+    const orders = [
+      { id: 'O-2461', customerId: 'C-1001', orderDate: '2026-06-10', deliveryDate: '2026-06-28', stage: 2, items: [I('Titanium Letters', '8" letters, mirror finish — shop fascia', 14, 650), I('Sign Boards', 'ACP backing, 4×6 ft', 24, 180)] },
+      { id: 'O-2462', customerId: 'C-1002', orderDate: '2026-06-18', deliveryDate: '2026-07-03', stage: 3, items: [I('LED Lighting Boards', 'Glow sign, double-sided, 8×4 ft', 32, 450)] },
+      { id: 'O-2463', customerId: 'C-2001', orderDate: '2026-06-22', deliveryDate: '2026-06-29', stage: 4, items: [I('Rubber Stamp', 'Self-inking round + 2 address stamps', 3, 250)] },
+      { id: 'O-2464', customerId: 'C-1003', orderDate: '2026-06-20', deliveryDate: '2026-07-08', stage: 1, items: [I('Aluminium Letters', '6" letters, powder-coated black', 22, 280), I('Sign Boards', 'Flex print, 3×4 ft', 12, 180)] },
+      { id: 'O-2465', customerId: 'C-1004', orderDate: '2026-06-12', deliveryDate: '2026-06-24', stage: 4, items: [I('Brass Letters', 'Polished brass, 5" — counter signage', 18, 550), I('CNC Door Designing', 'Teak pattern, main entrance', 1, 3500)] },
+      { id: 'O-2466', customerId: 'C-2002', orderDate: '2026-06-26', deliveryDate: '2026-07-05', stage: 0, items: [I('God Idols', 'Panchaloha Ganesha, 12 inch', 1, 2500)] },
+      { id: 'O-2467', customerId: 'C-2003', orderDate: '2026-06-15', deliveryDate: '2026-06-27', stage: 2, items: [I('Stone Engraving (Kalvettu)', 'Black granite, name + date', 6, 900)] },
+      { id: 'O-2468', customerId: 'C-1002', orderDate: '2026-05-28', deliveryDate: '2026-06-14', stage: 4, items: [I('Party Flags', 'Festival bunting, printed both sides', 200, 45)] },
+      { id: 'O-2469', customerId: 'C-1001', orderDate: '2026-06-28', deliveryDate: '2026-07-12', stage: 1, items: [I('LED Lighting Boards', 'Branch board, 6×3 ft', 18, 450), I('Titanium Letters', 'Rose-gold, 6" letters', 8, 650)] },
+      { id: 'O-2470', customerId: 'C-2004', orderDate: '2026-06-29', deliveryDate: '2026-07-02', stage: 0, items: [I('Sign Boards', 'Name board, 2×4 ft acrylic', 8, 180)] },
+    ];
+    const payments = [
+      { id: 'P-501', orderId: 'O-2461', type: 'Advance', amount: 6000, date: '2026-06-10', mode: 'UPI' },
+      { id: 'P-502', orderId: 'O-2462', type: 'Advance', amount: 7000, date: '2026-06-18', mode: 'Cash' },
+      { id: 'P-503', orderId: 'O-2462', type: 'Partial', amount: 4000, date: '2026-06-25', mode: 'UPI' },
+      { id: 'P-504', orderId: 'O-2463', type: 'Final Balance', amount: 750, date: '2026-06-29', mode: 'Cash' },
+      { id: 'P-505', orderId: 'O-2464', type: 'Advance', amount: 3000, date: '2026-06-20', mode: 'Bank Transfer' },
+      { id: 'P-506', orderId: 'O-2465', type: 'Advance', amount: 6000, date: '2026-06-12', mode: 'UPI' },
+      { id: 'P-507', orderId: 'O-2465', type: 'Final Balance', amount: 7400, date: '2026-06-24', mode: 'Bank Transfer' },
+      { id: 'P-508', orderId: 'O-2467', type: 'Advance', amount: 2500, date: '2026-06-15', mode: 'Cash' },
+      { id: 'P-509', orderId: 'O-2468', type: 'Advance', amount: 4000, date: '2026-05-28', mode: 'Cash' },
+      { id: 'P-510', orderId: 'O-2468', type: 'Final Balance', amount: 5000, date: '2026-06-12', mode: 'UPI' },
+      { id: 'P-511', orderId: 'O-2469', type: 'Advance', amount: 5000, date: '2026-06-28', mode: 'UPI' },
+    ];
+    return { view: 'dashboard', role: 'admin', customers, categories, orders, payments, selectedCustomerId: null, selectedOrderId: null, custFilter: 'all', orderFilter: 'all', globalSearch: '', seqOrder: 2471, seqPay: 512, seqCat: 11, seqCustB2B: 1005, seqCustB2C: 2005, newOrder: null, payModal: null, invModal: null, productModal: null, customerModal: null, confirmModal: null };
+  })();
+
+  NOW = new Date(2026, 5, 30);
+  STAGES = ['Quoted', 'Advance Received', 'In Production', 'Ready for Delivery', 'Delivered'];
+
+  stageStyle(stage) {
+    const map = [
+      { bg: '#ECECED', color: '#8A8D93' },
+      { bg: '#DDF3FF', color: '#16B1FF' },
+      { bg: '#FFF1D6', color: '#D99800' },
+      { bg: '#EBE1FF', color: '#8C57FF' },
+      { bg: '#E5F6D8', color: '#56CA00' },
+    ];
+    return map[stage] || map[0];
+  }
+  paid(orderId) { return this.state.payments.filter(p => p.orderId === orderId).reduce((s, p) => s + p.amount, 0); }
+  total(o) { return o.items.reduce((s, i) => s + i.amount, 0); }
+  custById(id) { return this.state.customers.find(c => c.id === id); }
+  initials(name) { return name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase(); }
+  typeTag(type) { return type === 'B2B' ? { bg: '#EBE1FF', color: '#8C57FF', short: 'Shop', label: 'Shop / Business' } : { bg: '#DDF3FF', color: '#16B1FF', short: 'Individual', label: 'Individual' }; }
+  itemsSummary(o) { const n = o.items.map(i => i.category); return n.length <= 2 ? n.join(', ') : n.slice(0, 2).join(', ') + ' +' + (n.length - 2); }
+  qtyLabel(o, it) { const cat = this.state.categories.find(c => c.name === it.category); const u = cat ? cat.unit : ''; if (u.includes('sq.ft')) return it.qty + ' sqft'; if (u.includes('letter')) return it.qty + ' ltr'; return String(it.qty); }
+
+  go(view) { this.setState({ view, payModal: null, invModal: null }); }
+  openCustomer(id) { this.setState({ view: 'customerDetail', selectedCustomerId: id }); }
+  openOrder(id) { this.setState({ view: 'orderDetail', selectedOrderId: id }); }
+  toggleRole() { const role = this.state.role === 'admin' ? 'staff' : 'admin'; const view = (role === 'staff' && this.state.view === 'reports') ? 'dashboard' : this.state.view; this.setState({ role, view }); }
+  setStage(orderId, stage) { this.setState(s => ({ orders: s.orders.map(o => o.id === orderId ? { ...o, stage } : o) })); }
+
+  startNewOrder(customerId) { this.setState({ view: 'newOrder', newOrder: { customerId: customerId || '', orderDate: '2026-06-30', deliveryDate: '', items: [{ categoryId: '', description: '', qty: '', rate: '' }], error: false } }); }
+  noField(field, val) { this.setState(s => ({ newOrder: { ...s.newOrder, [field]: val, error: false } })); }
+  noItem(i, patch) { this.setState(s => { const items = s.newOrder.items.map((it, idx) => idx === i ? { ...it, ...patch } : it); return { newOrder: { ...s.newOrder, items, error: false } }; }); }
+  noCategory(i, catId) {
+    if (catId === '__new__') { this.openProduct(i); return; }
+    const cat = this.state.categories.find(c => c.id === catId);
+    this.noItem(i, { categoryId: catId, rate: cat ? String(cat.rate) : '' });
+  }
+  noAddItem() { this.setState(s => ({ newOrder: { ...s.newOrder, items: [...s.newOrder.items, { categoryId: '', description: '', qty: '', rate: '' }] } })); }
+  noRemoveItem(i) { this.setState(s => { const items = s.newOrder.items.filter((_, idx) => idx !== i); return { newOrder: { ...s.newOrder, items: items.length ? items : [{ categoryId: '', description: '', qty: '', rate: '' }] } }; }); }
+  noSave() {
+    const no = this.state.newOrder;
+    const valid = no.items.filter(it => it.categoryId && Number(it.qty) > 0 && Number(it.rate) >= 0);
+    if (!no.customerId || valid.length === 0) { this.setState(s => ({ newOrder: { ...s.newOrder, error: true } })); return; }
+    const id = 'O-' + this.state.seqOrder;
+    const items = valid.map(it => { const cat = this.state.categories.find(c => c.id === it.categoryId); const qty = Number(it.qty), rate = Number(it.rate); return { category: cat.name, description: it.description || '', qty, rate, amount: qty * rate }; });
+    const order = { id, customerId: no.customerId, orderDate: no.orderDate, deliveryDate: no.deliveryDate || no.orderDate, stage: 0, items };
+    this.setState(s => ({ orders: [order, ...s.orders], seqOrder: s.seqOrder + 1, view: 'orderDetail', selectedOrderId: id, newOrder: null }));
+  }
+
+  openPayment(orderId) { const o = this.state.orders.find(x => x.id === orderId); const bal = this.total(o) - this.paid(orderId); const type = this.paid(orderId) === 0 ? 'Advance' : (bal > 0 ? 'Partial' : 'Final Balance'); this.setState({ payModal: { orderId, amount: '', type, mode: 'UPI', date: '2026-06-30' } }); }
+  pmField(field, val) { this.setState(s => ({ payModal: { ...s.payModal, [field]: val } })); }
+  pmSave() {
+    const pm = this.state.payModal;
+    const amt = Number(pm.amount);
+    if (!amt || amt <= 0) return;
+    const id = 'P-' + this.state.seqPay;
+    const pay = { id, orderId: pm.orderId, type: pm.type, amount: amt, date: pm.date, mode: pm.mode };
+    this.setState(s => {
+      let orders = s.orders;
+      const o = orders.find(x => x.id === pm.orderId);
+      const newPaid = this.paid(pm.orderId) + amt;
+      const tot = this.total(o);
+      let stage = o.stage;
+      if (s.payments.filter(p => p.orderId === pm.orderId).length === 0 && stage < 1) stage = 1;
+      if (newPaid >= tot && stage < 4) stage = Math.max(stage, 3);
+      orders = orders.map(x => x.id === pm.orderId ? { ...x, stage } : x);
+      return { payments: [...s.payments, pay], seqPay: s.seqPay + 1, orders, payModal: null };
+    });
+  }
+
+  openInvoice(orderId, kind) { this.setState({ invModal: { orderId, kind } }); }
+  printInvoice() { window.print(); }
+
+  openCustomer2() { this.setState({ customerModal: { editId: null, type: 'B2B', name: '', contact: '', phone: '', address: '', gst: '', notes: '' } }); }
+  openEditCustomer(id) {
+    const c = this.custById(id);
+    if (!c) return;
+    this.setState({ customerModal: { editId: id, type: c.type, name: c.name, contact: c.contact || '', phone: c.phone, address: c.address, gst: c.gst || '', notes: c.notes || '' } });
+  }
+  cmField(field, val) { this.setState(s => ({ customerModal: { ...s.customerModal, [field]: val, error: false } })); }
+  cmSave() {
+    const m = this.state.customerModal;
+    if (!m.name.trim() || !m.phone.trim()) { this.setState(s => ({ customerModal: { ...s.customerModal, error: true } })); return; }
+    const isB2B = m.type === 'B2B';
+    const area = (m.address.split(',')[0] || m.address).trim();
+    if (m.editId) {
+      this.setState(s => ({
+        customers: s.customers.map(c => c.id === m.editId ? { ...c, name: m.name.trim(), type: m.type, contact: isB2B ? m.contact.trim() : '', phone: m.phone.trim(), address: m.address.trim(), area, gst: isB2B ? m.gst.trim() : '', notes: m.notes.trim() } : c),
+        customerModal: null,
+      }));
+      return;
+    }
+    const seq = isB2B ? this.state.seqCustB2B : this.state.seqCustB2C;
+    const cust = { id: 'C-' + seq, name: m.name.trim(), type: m.type, contact: isB2B ? m.contact.trim() : '', phone: m.phone.trim(), address: m.address.trim(), area, gst: isB2B ? m.gst.trim() : '', notes: m.notes.trim() };
+    this.setState(s => ({ customers: [...s.customers, cust], seqCustB2B: isB2B ? s.seqCustB2B + 1 : s.seqCustB2B, seqCustB2C: isB2B ? s.seqCustB2C : s.seqCustB2C + 1, customerModal: null, view: 'customerDetail', selectedCustomerId: cust.id }));
+  }
+
+  openProduct(forItem) { this.setState({ productModal: { editId: null, name: '', unit: 'per piece', cost: '', rate: '', stock: '', forItem: (forItem == null ? null : forItem) } }); }
+  openEditProduct(id) {
+    const c = this.state.categories.find(x => x.id === id);
+    if (!c) return;
+    this.setState({ productModal: { editId: id, name: c.name, unit: c.unit, cost: c.cost ? String(c.cost) : '', rate: String(c.rate), stock: c.stock != null ? String(c.stock) : '', forItem: null } });
+  }
+  pmpField(field, val) { this.setState(s => ({ productModal: { ...s.productModal, [field]: val, error: false } })); }
+  pmpSave() {
+    const p = this.state.productModal;
+    if (!p.name.trim() || !(Number(p.rate) > 0)) { this.setState(s => ({ productModal: { ...s.productModal, error: true } })); return; }
+    if (p.editId) {
+      this.setState(s => ({
+        categories: s.categories.map(c => c.id === p.editId ? { ...c, name: p.name.trim(), unit: p.unit, cost: Number(p.cost) || 0, rate: Number(p.rate), stock: Number(p.stock) || 0 } : c),
+        productModal: null,
+      }));
+      return;
+    }
+    const cat = { id: 'CAT' + this.state.seqCat, name: p.name.trim(), unit: p.unit, cost: Number(p.cost) || 0, rate: Number(p.rate), stock: Number(p.stock) || 0, lowAt: Number(p.lowAt) || 10 };
+    const forItem = p.forItem;
+    this.setState(s => {
+      let newOrder = s.newOrder;
+      if (forItem != null && newOrder) {
+        const items = newOrder.items.map((it, idx) => idx === forItem ? { ...it, categoryId: cat.id, rate: String(cat.rate) } : it);
+        newOrder = { ...newOrder, items, error: false };
+      }
+      return { categories: [...s.categories, cat], seqCat: s.seqCat + 1, productModal: null, newOrder };
+    });
+  }
+
+  askDelete(kind, id, label, sub) { this.setState({ confirmModal: { kind, id, label, sub: sub || '' } }); }
+  doDelete() {
+    const cm = this.state.confirmModal;
+    if (!cm) return;
+    if (cm.kind === 'customer') {
+      this.setState(s => {
+        const orderIds = s.orders.filter(o => o.customerId === cm.id).map(o => o.id);
+        return {
+          customers: s.customers.filter(c => c.id !== cm.id),
+          orders: s.orders.filter(o => o.customerId !== cm.id),
+          payments: s.payments.filter(p => !orderIds.includes(p.orderId)),
+          confirmModal: null,
+          view: s.view === 'customerDetail' ? 'customers' : s.view,
+        };
+      });
+    } else if (cm.kind === 'product') {
+      this.setState(s => ({ categories: s.categories.filter(c => c.id !== cm.id), confirmModal: null }));
+    } else if (cm.kind === 'order') {
+      this.setState(s => ({
+        orders: s.orders.filter(o => o.id !== cm.id),
+        payments: s.payments.filter(p => p.orderId !== cm.id),
+        confirmModal: null,
+        view: s.view === 'orderDetail' ? 'orders' : s.view,
+      }));
+    }
+  }
+
+  decorate(o) {
+    const c = this.custById(o.customerId);
+    const tot = this.total(o), paid = this.paid(o.id), bal = tot - paid;
+    const ss = this.stageStyle(o.stage), tag = this.typeTag(c ? c.type : 'B2C'), dd = this.daysFromToday(o.deliveryDate);
+    return {
+      id: o.id, _o: o, customerName: c ? c.name : '—', customer: c, initials: this.initials(c ? c.name : '—'),
+      typeLabel: tag.label, typeShort: tag.short, tagBg: tag.bg, tagColor: tag.color,
+      total: tot, paid, balance: bal, totalFmt: this.inr(tot), paidFmt: this.inr(paid), balanceFmt: this.inr(bal),
+      stageName: this.STAGES[o.stage], stageBg: ss.bg, stageColor: ss.color,
+      deliveryFmt: this.fmtDateShort(o.deliveryDate), orderDateFmt: this.fmtDate(o.orderDate),
+      daysToDelivery: dd, delivered: o.stage === 4, itemsSummary: this.itemsSummary(o),
+    };
+  }
+
+  renderVals() {
+    const S = this.state;
+    const isAdmin = S.role === 'admin';
+
+    const navDefs = [
+      { key: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+      { key: 'customers', label: 'Customers', icon: 'customers' },
+      { key: 'orders', label: 'Orders', icon: 'orders' },
+      { key: 'products', label: 'Products', icon: 'products' },
+      { key: 'reports', label: 'Reports', icon: 'reports', adminOnly: true },
+    ];
+    const activeGroup = (v) => v === 'customerDetail' ? 'customers' : (['orderDetail', 'newOrder'].includes(v) ? 'orders' : v);
+    const curGroup = activeGroup(S.view);
+    const allDec = S.orders.map(o => this.decorate(o));
+    const pendingCount = allDec.filter(d => d.balance > 0).length;
+    const navItems = navDefs.map(n => {
+      const active = curGroup === n.key;
+      const locked = n.adminOnly && !isAdmin;
+      const item = {
+        key: n.key, label: n.label, locked,
+        icon: this.ico(n.icon, active ? '#fff' : (locked ? '#C7C2D6' : '#8B85A0')),
+        onClick: () => this.go(n.key),
+        style: 'display:flex; align-items:center; gap:12px; padding:11px 13px; border-radius:11px; cursor:pointer; font-size:14px; font-weight:' + (active ? '700' : '500') + '; color:' + (active ? '#fff' : (locked ? '#C7C2D6' : '#56516B')) + '; background:' + (active ? 'linear-gradient(100deg,#7C3AED,#6D34D0)' : 'transparent') + ';' + (active ? 'box-shadow:0 5px 14px rgba(124,58,237,.32);' : '') + 'transition:all .15s;',
+        badge: false, badgeText: '', badgeStyle: '',
+      };
+      if (n.key === 'orders' && pendingCount > 0) {
+        item.badge = true; item.badgeText = String(pendingCount);
+        item.badgeStyle = 'font-size:11px; font-weight:700; min-width:20px; height:20px; padding:0 6px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:' + (active ? 'rgba(255,255,255,.25)' : '#FFE3E4') + '; color:' + (active ? '#fff' : '#FF4C51') + ';';
+      }
+      return item;
+    });
+
+    const titles = {
+      dashboard: ['Dashboard', 'Today is ' + this.fmtDate('2026-06-30')],
+      customers: ['Customers', 'Manage shop & individual customers'],
+      customerDetail: ['Customer', 'Profile & order history'],
+      orders: ['Orders', 'All jobs, statuses & balances'],
+      orderDetail: ['Order', 'Job details, status & payments'],
+      newOrder: ['New Order', 'Create a custom job'],
+      products: ['Products', 'Categories & reference rates'],
+      reports: ['Reports', 'Business insights'],
+    };
+    const [pageTitle, pageSub] = titles[S.view] || ['', ''];
+
+    const base = {
+      navItems,
+      onNewOrder: () => this.startNewOrder(),
+      onToggleRole: () => this.toggleRole(),
+      roleName: isAdmin ? 'Owner' : 'Counter Staff', roleSub: isAdmin ? 'Full access' : 'Restricted', roleInitial: isAdmin ? 'O' : 'S',
+      pageTitle, pageSub,
+      globalSearch: S.globalSearch,
+      onGlobalSearch: (e) => this.setState({ globalSearch: e.target.value, view: 'customers', custFilter: 'all' }),
+      goCustomers: () => this.go('customers'), goOrders: () => this.go('orders'),
+      isDashboard: S.view === 'dashboard', isCustomers: S.view === 'customers', isCustomerDetail: S.view === 'customerDetail',
+      isOrders: S.view === 'orders', isOrderDetail: S.view === 'orderDetail', isNewOrder: S.view === 'newOrder',
+      isProducts: S.view === 'products', isReports: S.view === 'reports',
+      payModalOpen: !!S.payModal, invModalOpen: !!S.invModal,
+      confirmModalOpen: !!S.confirmModal,
+    };
+    base.iconEdit = this.ico('edit', '#8C57FF', 17);
+    base.iconTrash = this.ico('trash', '#FF4C51', 17);
+    if (S.confirmModal) {
+      const cf = S.confirmModal;
+      base.confirm = { label: cf.label, sub: cf.sub, onCancel: () => this.setState({ confirmModal: null }), onBackdrop: () => this.setState({ confirmModal: null }), stop: (e) => e.stopPropagation(), onConfirm: () => this.doDelete() };
+    }
+
+    // dashboard
+    const outstanding = allDec.filter(d => d.balance > 0).reduce((s, d) => s + d.balance, 0);
+    const inMonth = (dstr) => { const d = this.parseDate(dstr); return d.getFullYear() === 2026 && d.getMonth() === 5; };
+    const collectedMonth = S.payments.filter(p => inMonth(p.date)).reduce((s, p) => s + p.amount, 0);
+    const ordersMonth = S.orders.filter(o => inMonth(o.orderDate));
+    base.kpis = [
+      { label: 'Outstanding balance', value: this.inr(outstanding), valueColor: '#241F38', sub: pendingCount + ' orders with balance', icon: this.ico('wallet', '#7C3AED', 21) },
+      { label: 'Collected this month', value: this.inr(collectedMonth), valueColor: '#241F38', sub: 'June 2026', icon: this.ico('cash', '#7C3AED', 21) },
+      { label: 'Orders this month', value: String(ordersMonth.length), valueColor: '#241F38', sub: this.inr(ordersMonth.reduce((s, o) => s + this.total(o), 0)) + ' billed', icon: this.ico('cart', '#7C3AED', 21) },
+      { label: 'Active customers', value: String(S.customers.length), valueColor: '#241F38', sub: S.customers.filter(c => c.type === 'B2B').length + ' shops · ' + S.customers.filter(c => c.type === 'B2C').length + ' individual', icon: this.ico('users', '#7C3AED', 21) },
+    ];
+    base.pendingList = allDec.filter(d => d.balance > 0).sort((a, b) => b.balance - a.balance).slice(0, 5).map(d => ({ id: d.id, customerName: d.customerName, stageName: d.stageName, initials: d.initials, tagBg: d.tagBg, tagColor: d.tagColor, stageBg: d.stageBg, stageColor: d.stageColor, balanceFmt: d.balanceFmt, onOpen: () => this.openOrder(d.id) }));
+    base.deliveryList = allDec.filter(d => !d.delivered).sort((a, b) => a.daysToDelivery - b.daysToDelivery).slice(0, 5).map(d => {
+      const overdue = d.daysToDelivery < 0, soon = d.daysToDelivery >= 0 && d.daysToDelivery <= 3;
+      return { id: d.id, customerName: d.customerName, deliveryFmt: d.deliveryFmt,
+        icon: this.ico(overdue ? 'clock' : 'truck', overdue ? '#FF4C51' : (soon ? '#D99800' : '#56CA00'), 18),
+        dotBg: overdue ? '#FFE7E7' : (soon ? '#FFF1D6' : '#E9F8DA'), dotColor: overdue ? '#FF4C51' : (soon ? '#D99800' : '#56CA00'),
+        dueColor: overdue ? '#FF4C51' : (soon ? '#D99800' : '#6D6B77'),
+        dueLabel: overdue ? Math.abs(d.daysToDelivery) + 'd overdue' : (d.daysToDelivery === 0 ? 'Today' : 'in ' + d.daysToDelivery + 'd'),
+        onOpen: () => this.openOrder(d.id) };
+    });
+
+    // customers
+    const q = S.globalSearch.trim().toLowerCase();
+    let custs = S.customers;
+    if (S.custFilter === 'B2B') custs = custs.filter(c => c.type === 'B2B');
+    if (S.custFilter === 'B2C') custs = custs.filter(c => c.type === 'B2C');
+    if (q) custs = custs.filter(c => c.name.toLowerCase().includes(q) || c.phone.replace(/\s/g, '').includes(q.replace(/\s/g, '')) || (c.contact || '').toLowerCase().includes(q));
+    const custOrders = (cid) => allDec.filter(d => d.customer && d.customer.id === cid);
+    const filterBtn = (label, val, cur, onClick) => ({ label, onClick, style: 'padding:6px 14px; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; border:1px solid ' + (cur === val ? '#8C57FF' : '#E0DFE4') + '; background:' + (cur === val ? '#8C57FF' : '#fff') + '; color:' + (cur === val ? '#fff' : '#6D6B77') + ';' });
+    base.custFilters = [
+      filterBtn('All', 'all', S.custFilter, () => this.setState({ custFilter: 'all' })),
+      filterBtn('Shop / Business', 'B2B', S.custFilter, () => this.setState({ custFilter: 'B2B' })),
+      filterBtn('Individual', 'B2C', S.custFilter, () => this.setState({ custFilter: 'B2C' })),
+    ];
+    base.custCountLabel = custs.length + ' customer' + (custs.length === 1 ? '' : 's') + (q ? ' matching "' + S.globalSearch + '"' : '');
+    base.customerList = custs.map(c => {
+      const ords = custOrders(c.id);
+      const pending = ords.reduce((s, d) => s + Math.max(0, d.balance), 0);
+      const tag = this.typeTag(c.type);
+      return { id: c.id, name: c.name, phone: c.phone, subline: c.contact || c.area, initials: this.initials(c.name), typeLabel: tag.label, tagBg: tag.bg, tagColor: tag.color, orderCount: String(ords.length), pendingFmt: pending > 0 ? this.inr(pending) : '—', pendingColor: pending > 0 ? '#FF4C51' : '#A5A3AE', onOpen: () => this.openCustomer(c.id), onEdit: (e) => { e.stopPropagation(); this.openEditCustomer(c.id); }, onDelete: (e) => { e.stopPropagation(); this.askDelete('customer', c.id, 'Delete ' + c.name + '?', ords.length ? 'This also removes ' + ords.length + ' order(s) and their payments.' : 'This customer has no orders.'); } };
+    });
+
+    if (S.view === 'customerDetail') {
+      const c = this.custById(S.selectedCustomerId);
+      if (c) {
+        const ords = custOrders(c.id); const pending = ords.reduce((s, d) => s + Math.max(0, d.balance), 0); const tag = this.typeTag(c.type);
+        base.cd = { name: c.name, initials: this.initials(c.name), typeLabel: tag.label, tagBg: tag.bg, tagColor: tag.color, phone: c.phone, contact: c.contact, hasContact: !!c.contact, address: c.address, gst: c.gst, hasGst: !!c.gst, notes: c.notes, hasNotes: !!c.notes, pendingFmt: this.inr(pending), pendingColor: pending > 0 ? '#FF4C51' : '#56CA00', onNewOrder: () => this.startNewOrder(c.id), onEdit: () => this.openEditCustomer(c.id), onDelete: () => this.askDelete('customer', c.id, 'Delete ' + c.name + '?', ords.length ? 'This also removes ' + ords.length + ' order(s) and their payments.' : 'This customer has no orders.'),
+          orders: ords.map(d => ({ id: d.id, stageName: d.stageName, stageBg: d.stageBg, stageColor: d.stageColor, itemsSummary: d.itemsSummary, totalFmt: d.totalFmt, balDisplay: d.balance > 0 ? d.balanceFmt : 'Paid', balColor: d.balance > 0 ? '#FF4C51' : '#56CA00', onOpen: () => this.openOrder(d.id) })) };
+      }
+    }
+
+    // orders
+    let ords = allDec;
+    if (S.orderFilter === 'pending') ords = ords.filter(d => d.balance > 0);
+    else if (S.orderFilter === 'production') ords = ords.filter(d => d._o.stage >= 1 && d._o.stage <= 3);
+    else if (S.orderFilter === 'delivered') ords = ords.filter(d => d.delivered);
+    base.orderFilters = [
+      filterBtn('All', 'all', S.orderFilter, () => this.setState({ orderFilter: 'all' })),
+      filterBtn('Pending balance', 'pending', S.orderFilter, () => this.setState({ orderFilter: 'pending' })),
+      filterBtn('In production', 'production', S.orderFilter, () => this.setState({ orderFilter: 'production' })),
+      filterBtn('Delivered', 'delivered', S.orderFilter, () => this.setState({ orderFilter: 'delivered' })),
+    ];
+    base.orderList = ords.map(d => { const overdue = !d.delivered && d.daysToDelivery < 0; return { id: d.id, customerName: d.customerName, typeLabel: d.typeLabel, initials: d.initials, tagBg: d.tagBg, tagColor: d.tagColor, stageName: d.stageName, stageBg: d.stageBg, stageColor: d.stageColor, totalFmt: d.totalFmt, balDisplay: d.balance > 0 ? d.balanceFmt : 'Paid', balColor: d.balance > 0 ? '#FF4C51' : '#56CA00', deliveryFmt: d.deliveryFmt, dueColor: overdue ? '#FF4C51' : '#6D6B77', onOpen: () => this.openOrder(d.id) }; });
+
+    if (S.view === 'orderDetail') {
+      const o = S.orders.find(x => x.id === S.selectedOrderId);
+      if (o) {
+        const d = this.decorate(o); const pays = S.payments.filter(p => p.orderId === o.id);
+        base.od = { id: o.id, stageName: d.stageName, stageBg: d.stageBg, stageColor: d.stageColor, customerName: d.customerName, orderDateFmt: d.orderDateFmt, deliveryFmt: this.fmtDate(o.deliveryDate), totalFmt: d.totalFmt, paidFmt: d.paidFmt, balanceFmt: d.balanceFmt, balColor: d.balance > 0 ? '#FF4C51' : '#56CA00', balChip: d.balance > 0 ? 'Balance due' : 'Fully paid', balBg: d.balance > 0 ? '#FFE3E4' : '#E5F6D8', balChipColor: d.balance > 0 ? '#FF4C51' : '#56CA00', noPayments: pays.length === 0, onOpenCustomer: () => this.openCustomer(o.customerId), onRecordPayment: () => this.openPayment(o.id), onAdvanceReceipt: () => this.openInvoice(o.id, 'advance'), onFinalInvoice: () => this.openInvoice(o.id, 'final'), onDelete: () => this.askDelete('order', o.id, 'Delete order ' + o.id + '?', 'This removes the order and its recorded payments.'),
+          pipeline: this.STAGES.map((name, i) => ({ name, onClick: () => this.setStage(o.id, i), barColor: i <= o.stage ? '#8C57FF' : '#E6E5E8', textColor: i <= o.stage ? '#8C57FF' : '#A5A3AE', weight: i === o.stage ? '700' : '500' })),
+          items: o.items.map(it => ({ category: it.category, description: it.description, qtyLabel: this.qtyLabel(o, it), rateFmt: this.inr(it.rate), amountFmt: this.inr(it.amount) })),
+          payments: pays.map(p => ({ typeLabel: p.type, dateFmt: this.fmtDate(p.date), mode: p.mode, amountFmt: this.inr(p.amount), icon: (p.type[0] || 'P') })) };
+      }
+    }
+
+    if (S.view === 'newOrder' && S.newOrder) {
+      const no = S.newOrder; const total = no.items.reduce((s, it) => s + (Number(it.qty) || 0) * (Number(it.rate) || 0), 0);
+      base.nf = { customerId: no.customerId, orderDate: no.orderDate, deliveryDate: no.deliveryDate,
+        onCustomer: (e) => this.noField('customerId', e.target.value), onOrderDate: (e) => this.noField('orderDate', e.target.value), onDeliveryDate: (e) => this.noField('deliveryDate', e.target.value),
+        customerOptions: S.customers.map(c => ({ id: c.id, label: c.name + ' (' + (c.type === 'B2B' ? 'Shop' : 'Individual') + ')' })),
+        categoryOptions: S.categories.map(c => ({ id: c.id, name: c.name })),
+        items: no.items.map((it, i) => { const cat = S.categories.find(c => c.id === it.categoryId); const amt = (Number(it.qty) || 0) * (Number(it.rate) || 0); return { categoryId: it.categoryId, description: it.description, qty: it.qty, rate: it.rate, descPlaceholder: cat ? 'Size, material, design…' : 'Description', amountFmt: this.inr(amt), onCategory: (e) => this.noCategory(i, e.target.value), onDescription: (e) => this.noItem(i, { description: e.target.value }), onQty: (e) => this.noItem(i, { qty: e.target.value }), onRate: (e) => this.noItem(i, { rate: e.target.value }), onRemove: () => this.noRemoveItem(i) }; }),
+        totalFmt: this.inr(total), onAddItem: () => this.noAddItem(), onSave: () => this.noSave(), error: no.error, errorMsg: 'Select a customer and add at least one item' };
+    }
+
+    // products
+    const usage = {};
+    S.orders.forEach(o => o.items.forEach(it => { usage[it.category] = (usage[it.category] || 0) + 1; }));
+    base.products = S.categories.map((c, i) => {
+      const cost = c.cost || 0, margin = c.rate - cost, marginPct = c.rate > 0 ? Math.round(margin / c.rate * 100) : 0;
+      const stock = c.stock || 0, lowAt = c.lowAt || 10, low = stock <= lowAt, out = stock <= 0;
+      const unitWord = c.unit.includes('sq.ft') ? 'sqft' : (c.unit.includes('letter') ? 'ltr' : (c.unit.includes('design') ? 'designs' : 'pcs'));
+      return { name: c.name, code: 'PRD-' + String(i + 1).padStart(2, '0'), unitLabel: c.unit.replace('per ', 'Per '), purchaseFmt: cost > 0 ? this.inr(cost) : '—', saleFmt: this.inr(c.rate), marginFmt: this.inr(margin), marginPct: marginPct + '%', marginColor: margin > 0 ? '#56CA00' : '#A5A3AE', usage: String(usage[c.name] || 0), initials: this.initials(c.name),
+        stockLabel: stock + ' ' + unitWord, stockColor: out ? '#FF4C51' : (low ? '#D99800' : '#2F2B3D'),
+        stockBadge: out ? 'Out' : (low ? 'Low' : 'In stock'), stockBadgeBg: out ? '#FFE3E4' : (low ? '#FFF1D6' : '#E5F6D8'), stockBadgeColor: out ? '#FF4C51' : (low ? '#D99800' : '#56CA00'),
+        onEdit: () => this.openEditProduct(c.id), onDelete: () => this.askDelete('product', c.id, 'Delete ' + c.name + '?', (usage[c.name] || 0) ? 'Used in ' + usage[c.name] + ' existing order(s); those keep their saved details.' : 'This product is not used in any order.') };
+    });
+    base.onAddProduct = () => this.openProduct();
+    base.onAddCustomer = () => this.openCustomer2();
+    base.customerModalOpen = !!S.customerModal;
+    if (S.customerModal) {
+      const m = S.customerModal;
+      base.cm = { type: m.type, name: m.name, contact: m.contact, phone: m.phone, address: m.address, gst: m.gst, notes: m.notes, error: m.error, isB2B: m.type === 'B2B', title: m.editId ? 'Edit customer' : 'Add customer', saveLabel: m.editId ? 'Save changes' : 'Save customer',
+        typeShopStyle: 'flex:1; padding:9px; border-radius:7px; font-size:13px; font-weight:600; cursor:pointer; border:1px solid ' + (m.type === 'B2B' ? '#8C57FF' : '#D9D8DE') + '; background:' + (m.type === 'B2B' ? '#8C57FF' : '#fff') + '; color:' + (m.type === 'B2B' ? '#fff' : '#6D6B77') + ';',
+        typeIndivStyle: 'flex:1; padding:9px; border-radius:7px; font-size:13px; font-weight:600; cursor:pointer; border:1px solid ' + (m.type === 'B2C' ? '#8C57FF' : '#D9D8DE') + '; background:' + (m.type === 'B2C' ? '#8C57FF' : '#fff') + '; color:' + (m.type === 'B2C' ? '#fff' : '#6D6B77') + ';',
+        onShop: () => this.cmField('type', 'B2B'), onIndiv: () => this.cmField('type', 'B2C'),
+        onName: (e) => this.cmField('name', e.target.value), onContact: (e) => this.cmField('contact', e.target.value), onPhone: (e) => this.cmField('phone', e.target.value), onAddress: (e) => this.cmField('address', e.target.value), onGst: (e) => this.cmField('gst', e.target.value), onNotes: (e) => this.cmField('notes', e.target.value),
+        onClose: () => this.setState({ customerModal: null }), onBackdrop: () => this.setState({ customerModal: null }), stop: (e) => e.stopPropagation(), onSave: () => this.cmSave() };
+    }
+    base.productModalOpen = !!S.productModal;
+    if (S.productModal) {
+      const p = S.productModal;
+      const cost = Number(p.cost) || 0, rate = Number(p.rate) || 0, margin = rate - cost;
+      base.pmp = { name: p.name, unit: p.unit, cost: p.cost, rate: p.rate, stock: p.stock, error: p.error, title: p.editId ? 'Edit product' : 'Add product', saveLabel: p.editId ? 'Save changes' : 'Save product',
+        onStock: (e) => this.pmpField('stock', e.target.value),
+        marginFmt: rate > 0 ? this.inr(margin) + ' (' + Math.round(margin / rate * 100) + '%)' : '—',
+        onName: (e) => this.pmpField('name', e.target.value), onUnit: (e) => this.pmpField('unit', e.target.value), onCost: (e) => this.pmpField('cost', e.target.value), onRate: (e) => this.pmpField('rate', e.target.value),
+        onClose: () => this.setState({ productModal: null }), onBackdrop: () => this.setState({ productModal: null }), stop: (e) => e.stopPropagation(), onSave: () => this.pmpSave() };
+    }
+
+    // reports
+    base.reportsLocked = !isAdmin; base.reportsVisible = isAdmin;
+    if (isAdmin) {
+      const catTotals = {};
+      S.orders.forEach(o => o.items.forEach(it => { catTotals[it.category] = (catTotals[it.category] || 0) + it.amount; }));
+      const arr = Object.entries(catTotals).map(([name, amount]) => ({ name, amount })).sort((a, b) => b.amount - a.amount);
+      const max = arr.length ? arr[0].amount : 1;
+      base.catSales = arr.map(c => ({ name: c.name, amountFmt: this.inr(c.amount), pct: Math.round(c.amount / max * 100) + '%' }));
+      let b2b = 0, b2c = 0;
+      allDec.forEach(d => { if (d.customer && d.customer.type === 'B2B') b2b += d.total; else b2c += d.total; });
+      const tot = b2b + b2c || 1;
+      base.split = { b2bFmt: this.inr(b2b), b2cFmt: this.inr(b2c), b2bPct: Math.round(b2b / tot * 100) + '%', b2cPct: Math.round(b2c / tot * 100) + '%' };
+      base.monthly = { billed: this.inr(ordersMonth.reduce((s, o) => s + this.total(o), 0)), collected: this.inr(collectedMonth), pending: this.inr(outstanding), orders: String(ordersMonth.length) };
+    }
+
+    if (S.payModal) {
+      const pm = S.payModal; const o = S.orders.find(x => x.id === pm.orderId); const bal = this.total(o) - this.paid(pm.orderId);
+      base.pm = { orderLabel: o.id, balanceFmt: this.inr(bal), amount: pm.amount, type: pm.type, mode: pm.mode, date: pm.date,
+        onAmount: (e) => this.pmField('amount', e.target.value), onType: (e) => this.pmField('type', e.target.value), onMode: (e) => this.pmField('mode', e.target.value), onDate: (e) => this.pmField('date', e.target.value),
+        onClose: () => this.setState({ payModal: null }), onBackdrop: () => this.setState({ payModal: null }), stop: (e) => e.stopPropagation(), onSave: () => this.pmSave(),
+        quickAmounts: [ { label: 'Half', onClick: () => this.pmField('amount', String(Math.round(bal / 2))) }, { label: 'Full balance', onClick: () => this.pmField('amount', String(bal)) }, { label: '₹5,000', onClick: () => this.pmField('amount', '5000') } ] };
+    }
+
+    if (S.invModal) {
+      const im = S.invModal; const o = S.orders.find(x => x.id === im.orderId); const c = this.custById(o.customerId);
+      const tot = this.total(o), paid = this.paid(o.id), bal = tot - paid; const isAdvance = im.kind === 'advance';
+      const hasGst = c && c.type === 'B2B' && !!c.gst; const taxable = hasGst ? tot / 1.18 : tot; const gstEach = hasGst ? (tot - taxable) / 2 : 0;
+      base.inv = { kind: im.kind, docTitle: isAdvance ? 'ADVANCE RECEIPT' : 'TAX INVOICE', titleColor: isAdvance ? '#D99800' : '#8C57FF', docNo: (isAdvance ? 'AR-' : 'INV-') + o.id.replace('O-', ''), dateFmt: this.fmtDate('2026-06-30'), customerName: c ? c.name : '—', customerAddress: c ? c.address : '', customerPhone: c ? c.phone : '', hasGst, customerGst: c ? c.gst : '', orderId: o.id, deliveryFmt: this.fmtDate(o.deliveryDate),
+        items: o.items.map(it => ({ category: it.category, description: it.description, qtyLabel: this.qtyLabel(o, it), rateFmt: this.inr(it.rate), amountFmt: this.inr(it.amount) })),
+        taxableFmt: this.inr(taxable), cgstFmt: this.inr(gstEach), sgstFmt: this.inr(gstEach), totalFmt: this.inr(tot), paidFmt: this.inr(paid), balanceFmt: this.inr(bal), balLabel: bal > 0 ? 'Balance Due' : 'Paid in Full', balBg: bal > 0 ? '#FFE3E4' : '#E5F6D8', balColor: bal > 0 ? '#FF4C51' : '#56CA00',
+        footNote: isAdvance ? 'Advance received against the above order. Balance payable on delivery. Goods are custom-made and non-refundable.' : 'Thank you for your business. Goods once delivered will not be taken back. Subject to Coimbatore jurisdiction.',
+        onClose: () => this.setState({ invModal: null }), onBackdrop: () => this.setState({ invModal: null }), stop: (e) => e.stopPropagation(), onPrint: () => this.printInvoice() };
+    }
+
+    return base;
+  }
+}
+</script>
+</body>
+</html>
