@@ -2,7 +2,6 @@ version: 1
 applications:
   - appRoot: lukky-web
     frontend:
-      buildPath: /
       phases:
         preBuild:
           commands:
