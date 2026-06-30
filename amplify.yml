@@ -7,6 +7,7 @@ applications:
           commands:
             - nvm use 22
             - npm ci
+            - npx prisma generate
         build:
           commands:
             - npm run build
