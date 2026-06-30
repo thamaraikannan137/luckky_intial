@@ -50,3 +50,18 @@ Prisma schema remains in `prisma/`. To use Neon:
 | `npm run build` | Production build |
 | `npm run db:migrate` | Run migrations |
 | `npm run db:seed` | Seed demo data |
+
+## Deploy on AWS Amplify
+
+The repo includes `amplify.yml` at the root (app lives in `lukky-web/`).
+
+1. Open [AWS Amplify Console](https://console.aws.amazon.com/amplify/) → **Create new app** → **Host web app**
+2. Connect **GitHub** → select `thamaraikannan137/luckky_intial` → branch **main**
+3. Amplify should detect the monorepo and use `lukky-web` as the app root (from `amplify.yml`)
+4. **Environment variables** (optional for now — mock data works without DB):
+   - `DATABASE_URL` — only when API routes use Prisma
+5. Save and deploy. Build command: `npm run build`, Node **20**
+
+After deploy, your app URL will look like `https://main.xxxxx.amplifyapp.com`.
+
+**Note:** Mock data resets on server restarts / new Lambda instances. For persistent data, connect Neon and switch API routes to Prisma.
